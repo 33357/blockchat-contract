@@ -1,5 +1,12 @@
-import { BigNumber, BytesLike, CallOverrides, PayableOverrides, Signer } from 'ethers';
+import { BigNumber, BigNumberish, BytesLike, CallOverrides, PayableOverrides, Signer } from 'ethers';
 import { Provider } from '@ethersproject/providers';
+
+export interface Message {
+  sender: string;
+  recipient: BytesLike;
+  content: string;
+  createDate: BigNumber;
+}
 
 export interface BlockChatUpgradeableClient {
   connect(
@@ -14,14 +21,21 @@ export interface BlockChatUpgradeableClient {
 
   implementationVersion(config?: CallOverrides): Promise<string>;
 
-  getGroupHash(name: string, config?: CallOverrides): Promise<BytesLike>;
+  getRecipientHash(name: string, config?: CallOverrides): Promise<BytesLike>;
 
   getSenderMessageListLength(sender: string, config?: CallOverrides): Promise<BigNumber>;
 
   getRecipientMessageListLength(recipient: BytesLike, config?: CallOverrides): Promise<BigNumber>;
 
-  /* ================ TRANSACTION FUNCTIONS ================ */
+  messageLength(config?: CallOverrides): Promise<BigNumber>;
 
-  createMessage(recipient: BytesLike, content: string, config?: PayableOverrides, callback?: Function): Promise<void>;
+  senderMessageListMap(sender: string, index: BigNumberish, config?: CallOverrides): Promise<BigNumber>;
 
+  recipientMessageListMap(recipient: BytesLike, index: BigNumberish, config?: CallOverrides): Promise<BigNumber>;
+
+  messageMap(messageId: BigNumberish, config?: CallOverrides): Promise<Message>;
+
+  /* ================ PAYABLE FUNCTIONS ================ */
+
+  createMessage( recipient: BytesLike, content: string, config?: PayableOverrides, callback?: Function): Promise<void>;
 }

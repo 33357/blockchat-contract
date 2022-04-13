@@ -25,7 +25,7 @@ interface IBlockChatUpgradeable {
 
     function implementationVersion() external pure returns (string memory);
 
-    function getGroupHash(string memory name) external pure returns (bytes32);
+    function getRecipientHash(string memory name) external pure returns (bytes32);
 
     function getSenderMessageListLength(address sender) external view returns (uint256);
 

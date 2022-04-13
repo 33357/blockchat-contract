@@ -39,7 +39,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         return "1.0.0";
     }
 
-    function getGroupHash(string memory name) public pure override returns (bytes32) {
+    function getRecipientHash(string memory name) public pure override returns (bytes32) {
         return keccak256(abi.encodePacked(name));
     }
 

@@ -1,10 +1,11 @@
 import { Provider } from '@ethersproject/providers';
-import { BigNumber, BytesLike, CallOverrides, PayableOverrides, Signer } from 'ethers';
+import { BigNumber, BigNumberish, BytesLike, CallOverrides, PayableOverrides, Signer } from 'ethers';
 import {
   BlockChatUpgradeableClient,
   BlockChatUpgradeable,
   BlockChatUpgradeable__factory,
-  DeploymentInfo
+  DeploymentInfo,
+  Message
 } from '..';
 
 export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClient {
@@ -58,11 +59,11 @@ export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClie
     return this._upgradeable.implementationVersion({ ...config });
   }
 
-  public async getGroupHash(name: string, config?: CallOverrides): Promise<BytesLike> {
+  public async getRecipientHash(name: string, config?: CallOverrides): Promise<BytesLike> {
     if (!this._provider || !this._upgradeable) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    return this._upgradeable.getGroupHash(name, { ...config });
+    return this._upgradeable.getRecipientHash(name, { ...config });
   }
 
   public async getSenderMessageListLength(sender: string, config?: CallOverrides): Promise<BigNumber> {
@@ -77,6 +78,34 @@ export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClie
       throw new Error(`${this._errorTitle}: no provider`);
     }
     return this._upgradeable.getRecipientMessageListLength(recipient, { ...config });
+  }
+
+  public async messageLength(config?: CallOverrides): Promise<BigNumber> {
+    if (!this._provider || !this._upgradeable) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    return this._upgradeable.messageLength({ ...config });
+  }
+
+  public async senderMessageListMap(sender: string, index: BigNumberish, config?: CallOverrides): Promise<BigNumber> {
+    if (!this._provider || !this._upgradeable) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    return this._upgradeable.senderMessageListMap(sender, index, { ...config });
+  }
+
+  public async recipientMessageListMap(recipient: BytesLike, index: BigNumberish, config?: CallOverrides): Promise<BigNumber> {
+    if (!this._provider || !this._upgradeable) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    return this._upgradeable.recipientMessageListMap(recipient, index, { ...config });
+  }
+
+  public async messageMap(messageId: BigNumberish, config?: CallOverrides): Promise<Message> {
+    if (!this._provider || !this._upgradeable) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    return this._upgradeable.messageMap(messageId, { ...config });
   }
 
   /* ================ TRANSACTION FUNCTIONS ================ */
