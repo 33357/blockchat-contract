@@ -13,3 +13,4 @@ sdk/tsconfig.tsbuildinfo
 sdk/dist/
 logs/
 envs/
+coverage.json
