@@ -53,7 +53,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes32 recipient, string memory content) external override {
+    function createMessage(bytes32 recipient, string memory content) whenNotPaused external override {
         messageLength++;
         messageMap[messageLength] = Message(msg.sender, recipient, content, block.timestamp);
         senderMessageListMap[msg.sender].push(messageLength);
