@@ -1,6 +1,7 @@
 import '@nomiclabs/hardhat-ethers';
 import {task} from 'hardhat/config';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import {getImplementationAddress} from '@openzeppelin/upgrades-core';
 import {PayableOverrides} from 'ethers';
 import {
   EthersExecutionManager,
@@ -11,7 +12,7 @@ import {
   log,
 } from '../utils';
 
-const contract = 'Example';
+const contract = 'BlockChatUpgradeable';
 const taskName = `${contract}:deploy`;
 
 task(taskName, `Deploy ${contract}`)
@@ -34,25 +35,32 @@ task(taskName, `Deploy ${contract}`)
     log.info(`deploy ${contract}`);
     const Contract = await hre.ethers.getContractFactory(contract);
     const chainId = Number(await hre.getChainId());
-
     const deployResult = await ethersExecutionManager.transaction(
-      Contract.deploy.bind(Contract),
-      [],
+      (<any>hre).upgrades.deployProxy,
+      [Contract, [], {kind: 'uups'}],
       ['contractAddress', 'blockNumber'],
       `deploy ${contract}`,
       txConfig
     );
     const contractProxyAddress = deployResult.contractAddress;
-    const contractImplAddress = contractProxyAddress;
+    const contractImplAddress = await getImplementationAddress(
+      hre.ethers.provider,
+      contractProxyAddress
+    );
     const contractFromBlock = deployResult.blockNumber;
-    const contractVersion = '1.0.0';
+    const _contract = Contract.attach(contractProxyAddress);
+    const contractVersion = await ethersExecutionManager.call(
+      _contract.implementationVersion,
+      [],
+      `${contract} implementationVersion`
+    );
     log.info(
       `${contract} deployed proxy at ${contractProxyAddress},impl at ${contractImplAddress},version ${contractVersion},fromBlock ${contractFromBlock}`
     );
 
     const deployment = await getDeployment(chainId);
 
-    deployment.Example = {
+    deployment.ExampleUpgradeable = {
       proxyAddress: contractProxyAddress,
       implAddress: contractImplAddress,
       version: contractVersion,

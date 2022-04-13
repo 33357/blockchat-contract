@@ -1,8 +1,6 @@
 export * from './client';
 export * from './config';
 export {
-  ExampleUpgradeable,
-  ExampleUpgradeable__factory,
-  Example,
-  Example__factory
+  BlockChatUpgradeable,
+  BlockChatUpgradeable__factory,
 } from './typechain';

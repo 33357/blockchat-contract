@@ -1,16 +1,16 @@
 import { Provider } from '@ethersproject/providers';
-import { CallOverrides, PayableOverrides, Signer } from 'ethers';
+import { BigNumber, BytesLike, CallOverrides, PayableOverrides, Signer } from 'ethers';
 import {
-  ExampleUpgradeableClient,
-  ExampleUpgradeable,
-  ExampleUpgradeable__factory,
+  BlockChatUpgradeableClient,
+  BlockChatUpgradeable,
+  BlockChatUpgradeable__factory,
   DeploymentInfo
 } from '..';
 
-export class EtherExampleUpgradeableClient implements ExampleUpgradeableClient {
+export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClient {
   protected _provider: Provider | Signer | undefined;
   protected _waitConfirmations = 3;
-  private _upgradeable: ExampleUpgradeable | undefined;
+  private _upgradeable: BlockChatUpgradeable | undefined;
   private _errorTitle: string | undefined;
 
   public async connect(
@@ -36,7 +36,7 @@ export class EtherExampleUpgradeableClient implements ExampleUpgradeableClient {
       }
       address = DeploymentInfo[network.chainId].ExampleUpgradeable.proxyAddress;
     }
-    this._upgradeable = ExampleUpgradeable__factory.connect(address, provider);
+    this._upgradeable = BlockChatUpgradeable__factory.connect(address, provider);
     if (waitConfirmations) {
       this._waitConfirmations = waitConfirmations;
     }
@@ -58,12 +58,31 @@ export class EtherExampleUpgradeableClient implements ExampleUpgradeableClient {
     return this._upgradeable.implementationVersion({ ...config });
   }
 
+  public async getGroupHash(name: string, config?: CallOverrides): Promise<BytesLike> {
+    if (!this._provider || !this._upgradeable) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    return this._upgradeable.getGroupHash(name, { ...config });
+  }
+
+  public async getSenderMessageListLength(sender: string, config?: CallOverrides): Promise<BigNumber> {
+    if (!this._provider || !this._upgradeable) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    return this._upgradeable.getSenderMessageListLength(sender, { ...config });
+  }
+
+  public async getRecipientMessageListLength(recipient: BytesLike, config?: CallOverrides): Promise<BigNumber> {
+    if (!this._provider || !this._upgradeable) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    return this._upgradeable.getRecipientMessageListLength(recipient, { ...config });
+  }
+
   /* ================ TRANSACTION FUNCTIONS ================ */
 
-  public async transaction(
-    config?: PayableOverrides,
-    callback?: Function
-  ): Promise<void> {
+
+  public async createMessage(recipient: BytesLike, content: string, config?: PayableOverrides, callback?: Function): Promise<void> {
     if (
       !this._provider ||
       !this._upgradeable ||
@@ -73,10 +92,14 @@ export class EtherExampleUpgradeableClient implements ExampleUpgradeableClient {
     }
     const gas = await this._upgradeable
       .connect(this._provider)
-      .estimateGas.transaction({
-        ...config
-      });
-    const tx = await this._upgradeable.connect(this._provider).transaction({
+      .estimateGas.createMessage(
+        recipient,
+        content,
+        {
+          ...config
+        });
+    const tx = await this._upgradeable.connect(this._provider).createMessage(recipient,
+      content, {
       gasLimit: gas.mul(13).div(10),
       ...config
     });

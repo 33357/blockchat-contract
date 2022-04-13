@@ -2,11 +2,10 @@ import {expect} from 'chai';
 import {ethers, getNamedAccounts, upgrades} from 'hardhat';
 import {BigNumber, Signer} from 'ethers';
 import pino from 'pino';
-import {EtherExampleUpgradeableClient, ExampleUpgradeable} from '../sdk/dist';
-import {ERC20TEST} from '../sdk/src/typechain';
+import {EtherBlockChatUpgradeableClient, BlockChatUpgradeable} from '../sdk/dist';
 
 const Logger = pino();
-const contractName = 'ExampleUpgradeable';
+const contractName = 'BlockChatUpgradeable';
 
 describe(`test ${contractName}`, function () {
   let deployer: Signer;
@@ -19,7 +18,7 @@ describe(`test ${contractName}`, function () {
   });
 
   describe(`test ${contractName} sdk`, function () {
-    const contract = new EtherExampleUpgradeableClient();
+    const contract = new EtherBlockChatUpgradeableClient();
 
     beforeEach(`deploy and init ${contractName}`, async () => {
       const Contract = await ethers.getContractFactory(`${contractName}`);
@@ -38,14 +37,9 @@ describe(`test ${contractName}`, function () {
   });
 
   describe(`test ${contractName}`, function () {
-    let contract: ExampleUpgradeable;
-    let erc20: ERC20TEST;
+    let contract: BlockChatUpgradeable;
 
     beforeEach('deploy and init contract', async () => {
-      const ERC20 = await ethers.getContractFactory('ERC20_TEST');
-      erc20 = (await ERC20.connect(deployer).deploy()) as ERC20TEST;
-      Logger.info(`deployed ERC20 contract`);
-
       const Contract = await ethers.getContractFactory(contractName);
       contract = (await upgrades.deployProxy(
         Contract.connect(deployer),
@@ -53,7 +47,7 @@ describe(`test ${contractName}`, function () {
         {
           kind: 'uups',
         }
-      )) as ExampleUpgradeable;
+      )) as BlockChatUpgradeable;
       Logger.info(`deployed ${contractName}`);
     });
 
@@ -83,27 +77,6 @@ describe(`test ${contractName}`, function () {
       );
       await contract.connect(deployer).unpause();
       expect(await contract.paused()).equal(false);
-
-      await erc20.transfer(contract.address, BigNumber.from(100));
-      await expect(
-        contract
-          .connect(accountA)
-          .transferAnyERC20Token(
-            erc20.address,
-            await accountA.getAddress(),
-            BigNumber.from(100)
-          )
-      ).revertedWith(`${contractName}: require admin permission`);
-      await contract
-        .connect(deployer)
-        .transferAnyERC20Token(
-          erc20.address,
-          await accountA.getAddress(),
-          BigNumber.from(100)
-        );
-      expect(await erc20.balanceOf(await accountA.getAddress())).equal(
-        BigNumber.from(100)
-      );
     });
   });
 });
