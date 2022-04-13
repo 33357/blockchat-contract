@@ -1,8 +1,8 @@
-import {expect} from 'chai';
-import {ethers, getNamedAccounts, upgrades} from 'hardhat';
-import {BigNumber, Signer} from 'ethers';
+import { expect } from 'chai';
+import { ethers, getNamedAccounts, upgrades } from 'hardhat';
+import { BigNumber, Signer } from 'ethers';
 import pino from 'pino';
-import {EtherBlockChatUpgradeableClient, BlockChatUpgradeable} from '../sdk/dist';
+import { EtherBlockChatUpgradeableClient, BlockChatUpgradeable } from '../sdk/dist';
 
 const Logger = pino();
 const contractName = 'BlockChatUpgradeable';
@@ -43,16 +43,23 @@ describe(`test ${contractName}`, function () {
       expect(await contract.getRecipientMessageListLength(recipientHash)).to.be.equal(0);
       expect(await contract.getSenderMessageListLength(await deployer.getAddress())).to.be.equal(0);
 
-      await contract.createMessage(recipientHash,'你好');
+      await contract.createMessage(recipientHash, '你好');
 
       expect(await contract.messageLength()).to.be.equal(1);
       expect(await contract.getRecipientMessageListLength(recipientHash)).to.be.equal(1);
       expect(await contract.getSenderMessageListLength(await deployer.getAddress())).to.be.equal(1);
 
-      expect(await contract.recipientMessageListMap(recipientHash,0)).to.be.equal(1);
-      expect(await contract.senderMessageListMap(await deployer.getAddress(),0)).to.be.equal(1);
+      expect(await contract.recipientMessageListMap(recipientHash, 0)).to.be.equal(1);
+      expect(await contract.senderMessageListMap(await deployer.getAddress(), 0)).to.be.equal(1);
 
-      Logger.log(await contract.messageMap(1));
+      const message = await contract.messageMap(1);
+
+      expect(message.sender).to.be.equal(await deployer.getAddress());
+      expect(message.recipient).to.be.equal(recipientHash);
+      expect(message.content).to.be.equal('你好');
+      if (deployer.provider) {
+        expect(message.createDate).to.be.equal((await deployer.provider.getBlock('latest')).timestamp);
+      }
     });
   });
 
