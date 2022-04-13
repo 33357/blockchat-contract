@@ -7,7 +7,7 @@ import {EtherBlockChatUpgradeableClient, BlockChatUpgradeable} from '../sdk/dist
 const Logger = pino();
 const contractName = 'BlockChatUpgradeable';
 
-describe(`test ${contractName} sdk`, function () {
+describe(`test ${contractName}`, function () {
   let deployer: Signer;
   let accountA: Signer;
 
@@ -52,10 +52,8 @@ describe(`test ${contractName} sdk`, function () {
       expect(await contract.recipientMessageListMap(recipientHash,0)).to.be.equal(1);
       expect(await contract.senderMessageListMap(await deployer.getAddress(),0)).to.be.equal(1);
 
-      console.log(await contract.messageMap(1));
+      Logger.log(await contract.messageMap(1));
     });
-
-    
   });
 
   describe(`test ${contractName}`, function () {

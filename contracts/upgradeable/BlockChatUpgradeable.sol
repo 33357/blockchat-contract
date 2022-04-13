@@ -12,7 +12,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     mapping(bytes32 => uint256[]) public recipientMessageListMap;
     mapping(uint256 => Message) public messageMap;
 
-    uint256 public messageLength = 0;
+    uint256 public messageLength;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
