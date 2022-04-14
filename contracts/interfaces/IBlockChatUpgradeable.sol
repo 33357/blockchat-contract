@@ -34,4 +34,6 @@ interface IBlockChatUpgradeable {
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes32 recipient, string memory content) external;
+
+    function uploadEphemPublicKey(string memory ephemPublicKey) external;
 }

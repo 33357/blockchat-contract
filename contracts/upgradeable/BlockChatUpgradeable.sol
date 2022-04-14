@@ -10,6 +10,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     mapping(address => uint256[]) public senderMessageListMap;
     mapping(bytes32 => uint256[]) public recipientMessageListMap;
     mapping(uint256 => Message) public messageMap;
+    mapping(address => string) public ephemPublicKeyMap;
 
     uint256 public messageLength;
 
@@ -51,11 +52,15 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes32 recipient, string memory content) public override {
+    function createMessage(bytes32 recipient, string memory content) external override {
         messageLength++;
         messageMap[messageLength] = Message(msg.sender, recipient, content, block.timestamp);
         senderMessageListMap[msg.sender].push(messageLength);
         recipientMessageListMap[recipient].push(messageLength);
         emit MessageCreated(messageLength, msg.sender, recipient, content, block.timestamp);
+    }
+
+    function uploadEphemPublicKey(string memory ephemPublicKey) external override {
+        ephemPublicKeyMap[msg.sender] = ephemPublicKey;
     }
 }
