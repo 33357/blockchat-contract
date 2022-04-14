@@ -3,11 +3,10 @@ pragma solidity ^0.8.12;
 
 import "../interfaces/IBlockChatUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable, PausableUpgradeable, UUPSUpgradeable {
+contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     mapping(address => uint256[]) public senderMessageListMap;
     mapping(bytes32 => uint256[]) public recipientMessageListMap;
     mapping(uint256 => Message) public messageMap;
@@ -18,7 +17,6 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     constructor() initializer {}
 
     function initialize() public initializer {
-        __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -53,7 +51,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes32 recipient, string memory content) whenNotPaused external override {
+    function createMessage(bytes32 recipient, string memory content) public override {
         messageLength++;
         messageMap[messageLength] = Message(msg.sender, recipient, content, block.timestamp);
         senderMessageListMap[msg.sender].push(messageLength);
@@ -61,13 +59,9 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         emit MessageCreated(messageLength, msg.sender, recipient, content, block.timestamp);
     }
 
-    /* ================ ADMIN FUNCTIONS ================ */
-
-    function pause() external override _onlyAdmin {
-        _pause();
-    }
-
-    function unpause() external override _onlyAdmin {
-        _unpause();
+    function createMessageToRecipientList(bytes32 [] calldata recipientList, string calldata content) external override {
+        for (uint256 i = 0; i < recipientList.length; i++) {
+            createMessage(recipientList[i], content);
+        }
     }
 }

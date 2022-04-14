@@ -35,9 +35,5 @@ interface IBlockChatUpgradeable {
 
     function createMessage(bytes32 recipient, string memory content) external;
 
-    /* ================ ADMIN FUNCTIONS ================ */
-
-    function pause() external;
-
-    function unpause() external;
+    function createMessageToRecipientList(bytes32 [] calldata recipientList, string calldata content) external;
 }

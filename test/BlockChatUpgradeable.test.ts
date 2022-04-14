@@ -92,18 +92,6 @@ describe(`test ${contractName}`, function () {
           kind: 'uups',
         }
       );
-
-      await expect(contract.connect(accountA).pause()).revertedWith(
-        `${contractName}: require admin permission`
-      );
-      await contract.connect(deployer).pause();
-      expect(await contract.paused()).equal(true);
-
-      await expect(contract.connect(accountA).unpause()).revertedWith(
-        `${contractName}: require admin permission`
-      );
-      await contract.connect(deployer).unpause();
-      expect(await contract.paused()).equal(false);
     });
   });
 });
