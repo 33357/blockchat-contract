@@ -34,6 +34,4 @@ interface IBlockChatUpgradeable {
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes32 recipient, string memory content) external;
-
-    function createMessageToRecipientList(bytes32 [] calldata recipientList, string calldata content) external;
 }

@@ -58,10 +58,4 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         recipientMessageListMap[recipient].push(messageLength);
         emit MessageCreated(messageLength, msg.sender, recipient, content, block.timestamp);
     }
-
-    function createMessageToRecipientList(bytes32 [] calldata recipientList, string calldata content) external override {
-        for (uint256 i = 0; i < recipientList.length; i++) {
-            createMessage(recipientList[i], content);
-        }
-    }
 }

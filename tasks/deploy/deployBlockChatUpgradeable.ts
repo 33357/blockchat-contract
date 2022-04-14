@@ -60,7 +60,7 @@ task(taskName, `Deploy ${contract}`)
 
     const deployment = await getDeployment(chainId);
 
-    deployment.ExampleUpgradeable = {
+    deployment[contract] = {
       proxyAddress: contractProxyAddress,
       implAddress: contractImplAddress,
       version: contractVersion,

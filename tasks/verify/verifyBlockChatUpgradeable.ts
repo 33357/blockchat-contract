@@ -13,10 +13,10 @@ task(taskName, `verify ${contract}`).setAction(
     );
 
     utils.log.info(
-      `verify ${contract},implAddress: ${deployment.ExampleUpgradeable.implAddress}`
+      `verify ${contract},implAddress: ${deployment[contract].implAddress}`
     );
     await hre.run('verify:verify', {
-      address: deployment.ExampleUpgradeable.implAddress,
+      address: deployment[contract].implAddress,
       constructorArguments: [],
     });
   }

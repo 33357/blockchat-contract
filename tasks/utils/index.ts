@@ -72,8 +72,7 @@ export interface ContractInfo {
 }
 
 export interface Deployment {
-  ExampleUpgradeable: ContractInfo;
-  Example: ContractInfo;
+  BlockChatUpgradeable: ContractInfo;
 }
 
 export interface DeploymentFull {
