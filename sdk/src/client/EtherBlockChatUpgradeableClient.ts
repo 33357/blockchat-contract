@@ -97,7 +97,7 @@ export class EtherBlockChatUpgradeableClient
   public async getSenderMessageListLength(
     sender: string,
     config?: CallOverrides
-  ): Promise<BigNumber> {
+  ): Promise<BigNumberish> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -110,7 +110,7 @@ export class EtherBlockChatUpgradeableClient
   public async getRecipientMessageListLength(
     recipient: BytesLike,
     config?: CallOverrides
-  ): Promise<BigNumber> {
+  ): Promise<BigNumberish> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -122,7 +122,7 @@ export class EtherBlockChatUpgradeableClient
     });
   }
 
-  public async messageLength(config?: CallOverrides): Promise<BigNumber> {
+  public async messageLength(config?: CallOverrides): Promise<BigNumberish> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -136,7 +136,7 @@ export class EtherBlockChatUpgradeableClient
     sender: string,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumber> {
+  ): Promise<BigNumberish> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -150,7 +150,7 @@ export class EtherBlockChatUpgradeableClient
     recipient: BytesLike,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumber> {
+  ): Promise<BigNumberish> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -175,6 +175,53 @@ export class EtherBlockChatUpgradeableClient
     return this._contract.messageMap(messageId, { ...config });
   }
 
+  public async batchSenderMessageId(
+    sender: string,
+    start: BigNumberish,
+    length: BigNumberish,
+    config?: CallOverrides
+  ): Promise<Array<BigNumberish>> {
+    if (!this._provider) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    if (!this._contract) {
+      throw new Error(`${this._errorTitle}: no contract`);
+    }
+    return this._contract.batchSenderMessageId(sender, start, length, {
+      ...config
+    });
+  }
+
+  public async batchRecipientMessageId(
+    recipient: BytesLike,
+    start: BigNumberish,
+    length: BigNumberish,
+    config?: CallOverrides
+  ): Promise<Array<BigNumberish>> {
+    if (!this._provider) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    if (!this._contract) {
+      throw new Error(`${this._errorTitle}: no contract`);
+    }
+    return this._contract.batchRecipientMessageId(recipient, start, length, {
+      ...config
+    });
+  }
+
+  public async batchMessage(
+    messageIdList: Array<BigNumberish>,
+    config?: CallOverrides
+  ): Promise<Array<Message>> {
+    if (!this._provider) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    if (!this._contract) {
+      throw new Error(`${this._errorTitle}: no contract`);
+    }
+    return this._contract.batchMessage(messageIdList, { ...config });
+  }
+
   /* ================ TRANSACTION FUNCTIONS ================ */
 
   public async createMessage(
@@ -182,7 +229,7 @@ export class EtherBlockChatUpgradeableClient
     content: string,
     config?: PayableOverrides,
     callback?: Function
-  ): Promise<BigNumber> {
+  ): Promise<MessageCreatedEvent> {
     if (
       !this._provider ||
       !this._contract ||
@@ -208,15 +255,19 @@ export class EtherBlockChatUpgradeableClient
     if (callback) {
       callback(receipt);
     }
-    let blogId = BigNumber.from(0);
+    let message;
     if (receipt.events) {
       receipt.events
         .filter(event => event.event === 'MessageCreated' && event.args)
         .map(event => {
-          blogId = ((event.args as unknown) as MessageCreatedEvent).messageId;
+          message = ((event.args as unknown) as MessageCreatedEvent).messageId;
         });
     }
-    return blogId;
+    if (message) {
+      return message;
+    } else {
+      throw new Error('no event');
+    }
   }
 
   /* ================ LISTEN FUNCTIONS ================ */

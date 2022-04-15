@@ -1,5 +1,4 @@
 import {
-  BigNumber,
   BigNumberish,
   BytesLike,
   CallOverrides,
@@ -7,7 +6,7 @@ import {
   Signer
 } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import { Message } from '../model';
+import { Message, MessageCreatedEvent } from '../model';
 
 export interface BlockChatUpgradeableClient {
   connect(
@@ -27,28 +26,47 @@ export interface BlockChatUpgradeableClient {
   getSenderMessageListLength(
     sender: string,
     config?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<BigNumberish>;
 
   getRecipientMessageListLength(
     recipient: BytesLike,
     config?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<BigNumberish>;
 
-  messageLength(config?: CallOverrides): Promise<BigNumber>;
+  messageLength(config?: CallOverrides): Promise<BigNumberish>;
 
   senderMessageListMap(
     sender: string,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<BigNumberish>;
 
   recipientMessageListMap(
     recipient: BytesLike,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<BigNumberish>;
 
   messageMap(messageId: BigNumberish, config?: CallOverrides): Promise<Message>;
+
+  batchSenderMessageId(
+    sender: string,
+    start: BigNumberish,
+    length: BigNumberish,
+    config?: CallOverrides
+  ): Promise<Array<BigNumberish>>;
+
+  batchRecipientMessageId(
+    recipient: BytesLike,
+    start: BigNumberish,
+    length: BigNumberish,
+    config?: CallOverrides
+  ): Promise<Array<BigNumberish>>;
+
+  batchMessage(
+    messageIdList: Array<BigNumberish>,
+    config?: CallOverrides
+  ): Promise<Array<Message>>;
 
   /* ================ TRANSACTION FUNCTIONS ================ */
 
@@ -57,7 +75,7 @@ export interface BlockChatUpgradeableClient {
     content: string,
     config?: PayableOverrides,
     callback?: Function
-  ): Promise<BigNumber>;
+  ): Promise<MessageCreatedEvent>;
 
   /* ================ LISTEN FUNCTIONS ================ */
 

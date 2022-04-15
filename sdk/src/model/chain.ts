@@ -1,17 +1,17 @@
-import { BigNumber, BytesLike } from 'ethers';
+import { BigNumber, BigNumberish, BytesLike } from 'ethers';
 
 export interface Message {
   sender: string;
   recipient: BytesLike;
   content: string;
-  createDate: BigNumber;
+  createDate: BigNumberish;
 }
 
 export interface MessageCreatedEvent {
-  messageId: BigNumber;
+  messageId: BigNumberish;
   sender: string;
   recipient: BytesLike;
-  createDate: BigNumber;
+  createDate: BigNumberish;
 }
 
 export { ContractTransaction, ContractReceipt } from '@ethersproject/contracts';

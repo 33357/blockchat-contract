@@ -37,7 +37,7 @@ describe(`test ${contractName}`, function () {
     });
 
     it('check init data', async function () {
-      expect(await contract.implementationVersion()).to.be.equal('1.0.0');
+      expect(await contract.implementationVersion()).to.be.equal('1.1.0');
       expect(await contract.messageLength()).to.be.equal(0);
     });
 

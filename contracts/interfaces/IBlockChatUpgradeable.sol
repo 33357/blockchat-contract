@@ -31,9 +31,21 @@ interface IBlockChatUpgradeable {
 
     function getRecipientMessageListLength(bytes32 recipient) external view returns (uint256);
 
+    function batchSenderMessageId(
+        address sender,
+        uint256 start,
+        uint256 length
+    ) external view returns (uint256[] memory);
+
+    function batchRecipientMessageId(
+        bytes32 recipient,
+        uint256 start,
+        uint256 length
+    ) external view returns (uint256[] memory);
+
+    function batchMessage(uint256[] memory messageIdList) external view returns (Message[] memory);
+
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes32 recipient, string memory content) external;
-
-    function uploadEphemPublicKey(string memory ephemPublicKey) external;
 }

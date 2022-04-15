@@ -10,7 +10,6 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     mapping(address => uint256[]) public senderMessageListMap;
     mapping(bytes32 => uint256[]) public recipientMessageListMap;
     mapping(uint256 => Message) public messageMap;
-    mapping(address => string) public ephemPublicKeyMap;
 
     uint256 public messageLength;
 
@@ -35,7 +34,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     /* ================ VIEW FUNCTIONS ================ */
 
     function implementationVersion() public pure override returns (string memory) {
-        return "1.0.0";
+        return "1.1.0";
     }
 
     function getRecipientHash(string memory name) public pure override returns (bytes32) {
@@ -50,6 +49,38 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         return recipientMessageListMap[recipient].length;
     }
 
+    function batchSenderMessageId(
+        address sender,
+        uint256 start,
+        uint256 length
+    ) external view override returns (uint256[] memory) {
+        uint256[] memory messageIdList = new uint256[](length);
+        for (uint256 i = 0; i < length; i++) {
+            messageIdList[i] = senderMessageListMap[sender][start + i];
+        }
+        return messageIdList;
+    }
+
+    function batchRecipientMessageId(
+        bytes32 recipient,
+        uint256 start,
+        uint256 length
+    ) external view override returns (uint256[] memory) {
+        uint256[] memory messageIdList = new uint256[](length);
+        for (uint256 i = 0; i < length; i++) {
+            messageIdList[i] = recipientMessageListMap[recipient][start + i];
+        }
+        return messageIdList;
+    }
+
+    function batchMessage(uint256[] memory messageIdList) external view override returns (Message[] memory) {
+        Message[] memory messageList = new Message[](messageIdList.length);
+        for (uint256 i = 0; i < messageIdList.length; i++) {
+            messageList[i] = messageMap[messageIdList[i]];
+        }
+        return messageList;
+    }
+
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes32 recipient, string memory content) external override {
@@ -58,9 +89,5 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         senderMessageListMap[msg.sender].push(messageLength);
         recipientMessageListMap[recipient].push(messageLength);
         emit MessageCreated(messageLength, msg.sender, recipient, content, block.timestamp);
-    }
-
-    function uploadEphemPublicKey(string memory ephemPublicKey) external override {
-        ephemPublicKeyMap[msg.sender] = ephemPublicKey;
     }
 }
