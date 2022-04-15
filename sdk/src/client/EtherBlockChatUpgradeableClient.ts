@@ -1,14 +1,22 @@
 import { Provider } from '@ethersproject/providers';
-import { BigNumber, BigNumberish, BytesLike, CallOverrides, PayableOverrides, Signer } from 'ethers';
+import {
+  BigNumber,
+  BigNumberish,
+  BytesLike,
+  CallOverrides,
+  PayableOverrides,
+  Signer
+} from 'ethers';
 import {
   BlockChatUpgradeableClient,
   BlockChatUpgradeable,
   BlockChatUpgradeable__factory,
-  DeploymentInfo,
-  Message
+  DeploymentInfo
 } from '..';
+import { Message, MessageCreatedEvent } from '../model';
 
-export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClient {
+export class EtherBlockChatUpgradeableClient
+  implements BlockChatUpgradeableClient {
   protected _provider: Provider | Signer | undefined;
   protected _waitConfirmations = 3;
   private _contract: BlockChatUpgradeable | undefined;
@@ -35,7 +43,8 @@ export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClie
       if (!DeploymentInfo[network.chainId]) {
         throw new Error(`${this._errorTitle}: error chain`);
       }
-      address = DeploymentInfo[network.chainId].BlockChatUpgradeable.proxyAddress;
+      address =
+        DeploymentInfo[network.chainId].BlockChatUpgradeable.proxyAddress;
     }
     this._contract = BlockChatUpgradeable__factory.connect(address, provider);
     this._provider = provider;
@@ -45,7 +54,7 @@ export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClie
   }
 
   public address(): string {
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
     return this._contract.address;
@@ -53,90 +62,114 @@ export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClie
 
   /* ================ VIEW FUNCTIONS ================ */
 
-  async _check(){
+  async _check() {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
-    }
+    };
   }
 
   public async implementationVersion(config?: CallOverrides): Promise<string> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
     return this._contract.implementationVersion({ ...config });
   }
 
-  public async getRecipientHash(name: string, config?: CallOverrides): Promise<BytesLike> {
+  public async getRecipientHash(
+    name: string,
+    config?: CallOverrides
+  ): Promise<BytesLike> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
     return this._contract.getRecipientHash(name, { ...config });
   }
 
-  public async getSenderMessageListLength(sender: string, config?: CallOverrides): Promise<BigNumber> {
+  public async getSenderMessageListLength(
+    sender: string,
+    config?: CallOverrides
+  ): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
     return this._contract.getSenderMessageListLength(sender, { ...config });
   }
 
-  public async getRecipientMessageListLength(recipient: BytesLike, config?: CallOverrides): Promise<BigNumber> {
+  public async getRecipientMessageListLength(
+    recipient: BytesLike,
+    config?: CallOverrides
+  ): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
-    return this._contract.getRecipientMessageListLength(recipient, { ...config });
+    return this._contract.getRecipientMessageListLength(recipient, {
+      ...config
+    });
   }
 
   public async messageLength(config?: CallOverrides): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
     return this._contract.messageLength({ ...config });
   }
 
-  public async senderMessageListMap(sender: string, index: BigNumberish, config?: CallOverrides): Promise<BigNumber> {
+  public async senderMessageListMap(
+    sender: string,
+    index: BigNumberish,
+    config?: CallOverrides
+  ): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
     return this._contract.senderMessageListMap(sender, index, { ...config });
   }
 
-  public async recipientMessageListMap(recipient: BytesLike, index: BigNumberish, config?: CallOverrides): Promise<BigNumber> {
+  public async recipientMessageListMap(
+    recipient: BytesLike,
+    index: BigNumberish,
+    config?: CallOverrides
+  ): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
-    return this._contract.recipientMessageListMap(recipient, index, { ...config });
+    return this._contract.recipientMessageListMap(recipient, index, {
+      ...config
+    });
   }
 
-  public async messageMap(messageId: BigNumberish, config?: CallOverrides): Promise<Message> {
+  public async messageMap(
+    messageId: BigNumberish,
+    config?: CallOverrides
+  ): Promise<Message> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
-    if(!this._contract){
+    if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
     return this._contract.messageMap(messageId, { ...config });
@@ -144,8 +177,12 @@ export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClie
 
   /* ================ TRANSACTION FUNCTIONS ================ */
 
-
-  public async createMessage(recipient: BytesLike, content: string, config?: PayableOverrides, callback?: Function): Promise<void> {
+  public async createMessage(
+    recipient: BytesLike,
+    content: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<BigNumber> {
     if (
       !this._provider ||
       !this._contract ||
@@ -155,23 +192,47 @@ export class EtherBlockChatUpgradeableClient implements BlockChatUpgradeableClie
     }
     const gas = await this._contract
       .connect(this._provider)
-      .estimateGas.createMessage(
-        recipient,
-        content,
-        {
-          ...config
+      .estimateGas.createMessage(recipient, content, {
+        ...config
+      });
+    const transaction = await this._contract
+      .connect(this._provider)
+      .createMessage(recipient, content, {
+        gasLimit: gas.mul(13).div(10),
+        ...config
+      });
+    if (callback) {
+      callback(transaction);
+    }
+    const receipt = await transaction.wait(this._waitConfirmations);
+    if (callback) {
+      callback(receipt);
+    }
+    let blogId = BigNumber.from(0);
+    if (receipt.events) {
+      receipt.events
+        .filter(event => event.event === 'MessageCreated' && event.args)
+        .map(event => {
+          blogId = ((event.args as unknown) as MessageCreatedEvent).messageId;
         });
-    const tx = await this._contract.connect(this._provider).createMessage(recipient,
-      content, {
-      gasLimit: gas.mul(13).div(10),
-      ...config
+    }
+    return blogId;
+  }
+
+  /* ================ LISTEN FUNCTIONS ================ */
+
+  public async listenMessage(callback: Function): Promise<void> {
+    if (!this._provider || !this._contract) {
+      return Promise.reject('need to connect a valid provider');
+    }
+    this._contract.connect(this._provider).on('MessageCreated', (...args) => {
+      const event: MessageCreatedEvent = {
+        messageId: args[0],
+        sender: args[1],
+        recipient: args[2],
+        createDate: args[3]
+      };
+      callback(event);
     });
-    if (callback) {
-      callback(tx);
-    }
-    const rx = await tx.wait(this._waitConfirmations);
-    if (callback) {
-      callback(rx);
-    }
   }
 }

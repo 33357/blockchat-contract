@@ -1,12 +1,13 @@
-import { BigNumber, BigNumberish, BytesLike, CallOverrides, PayableOverrides, Signer } from 'ethers';
+import {
+  BigNumber,
+  BigNumberish,
+  BytesLike,
+  CallOverrides,
+  PayableOverrides,
+  Signer
+} from 'ethers';
 import { Provider } from '@ethersproject/providers';
-
-export interface Message {
-  sender: string;
-  recipient: BytesLike;
-  content: string;
-  createDate: BigNumber;
-}
+import { Message } from '../model';
 
 export interface BlockChatUpgradeableClient {
   connect(
@@ -23,19 +24,42 @@ export interface BlockChatUpgradeableClient {
 
   getRecipientHash(name: string, config?: CallOverrides): Promise<BytesLike>;
 
-  getSenderMessageListLength(sender: string, config?: CallOverrides): Promise<BigNumber>;
+  getSenderMessageListLength(
+    sender: string,
+    config?: CallOverrides
+  ): Promise<BigNumber>;
 
-  getRecipientMessageListLength(recipient: BytesLike, config?: CallOverrides): Promise<BigNumber>;
+  getRecipientMessageListLength(
+    recipient: BytesLike,
+    config?: CallOverrides
+  ): Promise<BigNumber>;
 
   messageLength(config?: CallOverrides): Promise<BigNumber>;
 
-  senderMessageListMap(sender: string, index: BigNumberish, config?: CallOverrides): Promise<BigNumber>;
+  senderMessageListMap(
+    sender: string,
+    index: BigNumberish,
+    config?: CallOverrides
+  ): Promise<BigNumber>;
 
-  recipientMessageListMap(recipient: BytesLike, index: BigNumberish, config?: CallOverrides): Promise<BigNumber>;
+  recipientMessageListMap(
+    recipient: BytesLike,
+    index: BigNumberish,
+    config?: CallOverrides
+  ): Promise<BigNumber>;
 
   messageMap(messageId: BigNumberish, config?: CallOverrides): Promise<Message>;
 
-  /* ================ PAYABLE FUNCTIONS ================ */
+  /* ================ TRANSACTION FUNCTIONS ================ */
 
-  createMessage( recipient: BytesLike, content: string, config?: PayableOverrides, callback?: Function): Promise<void>;
+  createMessage(
+    recipient: BytesLike,
+    content: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<BigNumber>;
+
+  /* ================ LISTEN FUNCTIONS ================ */
+
+  listenMessage(callback: Function): Promise<void>;
 }

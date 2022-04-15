@@ -2,5 +2,5 @@ export * from './client';
 export * from './config';
 export {
   BlockChatUpgradeable,
-  BlockChatUpgradeable__factory,
+  BlockChatUpgradeable__factory
 } from './typechain';
