@@ -68,7 +68,7 @@ export class EtherBlockChatUpgradeableClient
     }
     if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
-    };
+    }
   }
 
   public async implementationVersion(config?: CallOverrides): Promise<string> {
