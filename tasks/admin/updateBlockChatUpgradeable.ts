@@ -9,6 +9,7 @@ import {
   LOCK_DIR,
   RETRY_NUMBER,
   log,
+  setDeployment,
 } from '../utils';
 
 const contract = 'BlockChatUpgradeable';
@@ -30,9 +31,10 @@ task(taskName, `Update ${contract}`)
     );
     await ethersExecutionManager.load();
     const operator = (await hre.ethers.getSigners())[0];
+    const chainId = Number(await hre.getChainId());
 
     log.info(`update ${contract}`);
-    const deployment = await getDeployment(Number(await hre.getChainId()));
+    const deployment = await getDeployment(chainId);
     const Contract = await hre.ethers.getContractFactory(contract);
     const updateResult = await ethersExecutionManager.transaction(
       (<any>hre).upgrades.upgradeProxy,
@@ -60,6 +62,17 @@ task(taskName, `Update ${contract}`)
     log.info(
       `${contract} update proxy at ${contractProxyAddress},impl at ${contractImplAddress},version ${contractVersion},fromBlock ${contractFromBlock}`
     );
+
+    deployment[contract] = {
+      proxyAddress: contractProxyAddress,
+      implAddress: contractImplAddress,
+      version: contractVersion,
+      contract: contract,
+      operator: operator.address,
+      fromBlock: contractFromBlock,
+    };
+
+    await setDeployment(chainId, deployment);
 
     ethersExecutionManager.printGas();
     ethersExecutionManager.deleteLock();
