@@ -4,14 +4,14 @@ export interface Message {
   sender: string;
   recipient: BytesLike;
   content: string;
-  createDate: BigNumberish;
+  createDate: BigNumber;
 }
 
 export interface MessageCreatedEvent {
-  messageId: BigNumberish;
+  messageId: BigNumber;
   sender: string;
   recipient: BytesLike;
-  createDate: BigNumberish;
+  createDate: BigNumber;
 }
 
 export { ContractTransaction, ContractReceipt } from '@ethersproject/contracts';

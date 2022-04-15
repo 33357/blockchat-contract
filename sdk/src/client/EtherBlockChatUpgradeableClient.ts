@@ -97,7 +97,7 @@ export class EtherBlockChatUpgradeableClient
   public async getSenderMessageListLength(
     sender: string,
     config?: CallOverrides
-  ): Promise<BigNumberish> {
+  ): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -110,7 +110,7 @@ export class EtherBlockChatUpgradeableClient
   public async getRecipientMessageListLength(
     recipient: BytesLike,
     config?: CallOverrides
-  ): Promise<BigNumberish> {
+  ): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -122,7 +122,7 @@ export class EtherBlockChatUpgradeableClient
     });
   }
 
-  public async messageLength(config?: CallOverrides): Promise<BigNumberish> {
+  public async messageLength(config?: CallOverrides): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -136,7 +136,7 @@ export class EtherBlockChatUpgradeableClient
     sender: string,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumberish> {
+  ): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -150,7 +150,7 @@ export class EtherBlockChatUpgradeableClient
     recipient: BytesLike,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumberish> {
+  ): Promise<BigNumber> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -180,7 +180,7 @@ export class EtherBlockChatUpgradeableClient
     start: BigNumberish,
     length: BigNumberish,
     config?: CallOverrides
-  ): Promise<Array<BigNumberish>> {
+  ): Promise<Array<BigNumber>> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -197,7 +197,7 @@ export class EtherBlockChatUpgradeableClient
     start: BigNumberish,
     length: BigNumberish,
     config?: CallOverrides
-  ): Promise<Array<BigNumberish>> {
+  ): Promise<Array<BigNumber>> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }

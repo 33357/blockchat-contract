@@ -1,4 +1,5 @@
 import {
+  BigNumber,
   BigNumberish,
   BytesLike,
   CallOverrides,
@@ -26,26 +27,26 @@ export interface BlockChatUpgradeableClient {
   getSenderMessageListLength(
     sender: string,
     config?: CallOverrides
-  ): Promise<BigNumberish>;
+  ): Promise<BigNumber>;
 
   getRecipientMessageListLength(
     recipient: BytesLike,
     config?: CallOverrides
-  ): Promise<BigNumberish>;
+  ): Promise<BigNumber>;
 
-  messageLength(config?: CallOverrides): Promise<BigNumberish>;
+  messageLength(config?: CallOverrides): Promise<BigNumber>;
 
   senderMessageListMap(
     sender: string,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumberish>;
+  ): Promise<BigNumber>;
 
   recipientMessageListMap(
     recipient: BytesLike,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumberish>;
+  ): Promise<BigNumber>;
 
   messageMap(messageId: BigNumberish, config?: CallOverrides): Promise<Message>;
 
@@ -54,14 +55,14 @@ export interface BlockChatUpgradeableClient {
     start: BigNumberish,
     length: BigNumberish,
     config?: CallOverrides
-  ): Promise<Array<BigNumberish>>;
+  ): Promise<Array<BigNumber>>;
 
   batchRecipientMessageId(
     recipient: BytesLike,
     start: BigNumberish,
     length: BigNumberish,
     config?: CallOverrides
-  ): Promise<Array<BigNumberish>>;
+  ): Promise<Array<BigNumber>>;
 
   batchMessage(
     messageIdList: Array<BigNumberish>,
