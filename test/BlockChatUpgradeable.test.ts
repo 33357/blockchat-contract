@@ -41,6 +41,10 @@ describe(`test ${contractName}`, function () {
       expect(await contract.messageLength()).to.be.equal(0);
     });
 
+    it('check utils', async function () {
+      expect(await contract.getRecipientHash('123')).to.be.equal(contract.recipientHash('123'));
+    });
+
     it('check create Message', async function () {
       const recipientHash = await contract.getRecipientHash('北京');
       expect(

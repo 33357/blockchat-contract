@@ -4,6 +4,7 @@ import {
   BigNumberish,
   BytesLike,
   CallOverrides,
+  ethers,
   PayableOverrides,
   Signer
 } from 'ethers';
@@ -285,5 +286,11 @@ export class EtherBlockChatUpgradeableClient
       };
       callback(event);
     });
+  }
+
+  /* ================ UTILS FUNCTIONS ================ */
+
+  public recipientHash(name: string): BytesLike{
+    return ethers.utils.solidityKeccak256(['string'], [name]);
   }
 }

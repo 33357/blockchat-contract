@@ -81,4 +81,8 @@ export interface BlockChatUpgradeableClient {
   /* ================ LISTEN FUNCTIONS ================ */
 
   listenMessage(callback: Function): Promise<void>;
+
+  /* ================ UTILS FUNCTIONS ================ */
+
+  recipientHash(name: string): BytesLike;
 }
