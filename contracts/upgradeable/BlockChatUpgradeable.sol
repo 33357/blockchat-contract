@@ -78,15 +78,15 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     function batchMessage(uint256[] memory messageIdList) external view override returns (Message[] memory, MessageToRecipientList[] memory) {
         Message[] memory messageList = new Message[](messageIdList.length);
-        MessageToRecipientList[] memory messageToRecipientList = new MessageToRecipientList[](messageIdList.length);
+        MessageToRecipientList[] memory messageToRecipientList_List = new MessageToRecipientList[](messageIdList.length);
         for (uint256 i = 0; i < messageIdList.length; i++) {
             if(messageMap[messageIdList[i]].sender != address(0)) {
                 messageList[i] = messageMap[messageIdList[i]];
             } else if(messageToRecipientListMap[messageIdList[i]].sender != address(0)){
-                messageToRecipientList[i] = messageToRecipientListMap[messageIdList[i]];
+                messageToRecipientList_List[i] = messageToRecipientListMap[messageIdList[i]];
             }
         }
-        return (messageList, messageToRecipientList);
+        return (messageList, messageToRecipientList_List);
     }
 
     /* ================ TRANSACTION FUNCTIONS ================ */
