@@ -14,7 +14,12 @@ import {
   BlockChatUpgradeable__factory,
   DeploymentInfo
 } from '..';
-import { Message, MessageCreatedEvent } from '../model';
+import {
+  Message,
+  MessageCreatedEvent,
+  MessageToRecipientList,
+  MessageToRecipientListCreatedEvent
+} from '../model';
 
 export class EtherBlockChatUpgradeableClient
   implements BlockChatUpgradeableClient {
@@ -213,7 +218,7 @@ export class EtherBlockChatUpgradeableClient
   public async batchMessage(
     messageIdList: Array<BigNumberish>,
     config?: CallOverrides
-  ): Promise<Array<Message>> {
+  ): Promise<[Array<Message>, Array<MessageToRecipientList>]> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -261,7 +266,85 @@ export class EtherBlockChatUpgradeableClient
       receipt.events
         .filter(event => event.event === 'MessageCreated' && event.args)
         .map(event => {
-          message = ((event.args as unknown) as MessageCreatedEvent).messageId;
+          message = (event.args as unknown) as MessageCreatedEvent;
+        });
+    }
+    if (message) {
+      return message;
+    } else {
+      throw new Error('no event');
+    }
+  }
+
+  public async uploadPublicKey(
+    publicKey: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<void> {
+    if (
+      !this._provider ||
+      !this._contract ||
+      this._provider instanceof Provider
+    ) {
+      throw new Error(`${this._errorTitle}: no singer`);
+    }
+    const gas = await this._contract
+      .connect(this._provider)
+      .estimateGas.uploadPublicKey(publicKey, {
+        ...config
+      });
+    const transaction = await this._contract
+      .connect(this._provider)
+      .uploadPublicKey(publicKey, {
+        gasLimit: gas.mul(13).div(10),
+        ...config
+      });
+    if (callback) {
+      callback(transaction);
+    }
+    const receipt = await transaction.wait(this._waitConfirmations);
+    if (callback) {
+      callback(receipt);
+    }
+  }
+
+  public async createMessageToRecipientList(
+    recipientList: Array<BytesLike>,
+    content: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<MessageToRecipientListCreatedEvent> {
+    if (
+      !this._provider ||
+      !this._contract ||
+      this._provider instanceof Provider
+    ) {
+      throw new Error(`${this._errorTitle}: no singer`);
+    }
+    const gas = await this._contract
+      .connect(this._provider)
+      .estimateGas.createMessageToRecipientList(recipientList, content, {
+        ...config
+      });
+    const transaction = await this._contract
+      .connect(this._provider)
+      .createMessageToRecipientList(recipientList, content, {
+        gasLimit: gas.mul(13).div(10),
+        ...config
+      });
+    if (callback) {
+      callback(transaction);
+    }
+    const receipt = await transaction.wait(this._waitConfirmations);
+    if (callback) {
+      callback(receipt);
+    }
+    let message;
+    if (receipt.events) {
+      receipt.events
+        .filter(event => event.event === 'MessageCreated' && event.args)
+        .map(event => {
+          message = (event.args as unknown) as MessageToRecipientListCreatedEvent;
         });
     }
     if (message) {
@@ -290,7 +373,7 @@ export class EtherBlockChatUpgradeableClient
 
   /* ================ UTILS FUNCTIONS ================ */
 
-  public recipientHash(name: string): BytesLike{
+  public recipientHash(name: string): BytesLike {
     return ethers.utils.solidityKeccak256(['string'], [name]);
   }
 }

@@ -42,7 +42,9 @@ describe(`test ${contractName}`, function () {
     });
 
     it('check utils', async function () {
-      expect(await contract.getRecipientHash('123')).to.be.equal(contract.recipientHash('123'));
+      expect(await contract.getRecipientHash('123')).to.be.equal(
+        contract.recipientHash('123')
+      );
     });
 
     it('check create Message', async function () {

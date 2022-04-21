@@ -12,7 +12,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     mapping(uint256 => Message) public messageMap;
     mapping(uint256 => MessageToRecipientList) public messageToRecipientListMap;
 
-    mapping(address => bytes32) public publicKeyMap;
+    mapping(address => string) public publicKeyMap;
 
     uint256 public messageLength;
 
@@ -76,13 +76,20 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         return messageIdList;
     }
 
-    function batchMessage(uint256[] memory messageIdList) external view override returns (Message[] memory, MessageToRecipientList[] memory) {
+    function batchMessage(uint256[] memory messageIdList)
+        external
+        view
+        override
+        returns (Message[] memory, MessageToRecipientList[] memory)
+    {
         Message[] memory messageList = new Message[](messageIdList.length);
-        MessageToRecipientList[] memory messageToRecipientList_List = new MessageToRecipientList[](messageIdList.length);
+        MessageToRecipientList[] memory messageToRecipientList_List = new MessageToRecipientList[](
+            messageIdList.length
+        );
         for (uint256 i = 0; i < messageIdList.length; i++) {
-            if(messageMap[messageIdList[i]].sender != address(0)) {
+            if (messageMap[messageIdList[i]].sender != address(0)) {
                 messageList[i] = messageMap[messageIdList[i]];
-            } else if(messageToRecipientListMap[messageIdList[i]].sender != address(0)){
+            } else if (messageToRecipientListMap[messageIdList[i]].sender != address(0)) {
                 messageToRecipientList_List[i] = messageToRecipientListMap[messageIdList[i]];
             }
         }
@@ -101,15 +108,20 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     function createMessageToRecipientList(bytes32[] memory recipientList, string memory content) external override {
         messageLength++;
-        messageToRecipientListMap[messageLength] = MessageToRecipientList(msg.sender, recipientList, content, block.timestamp);
+        messageToRecipientListMap[messageLength] = MessageToRecipientList(
+            msg.sender,
+            recipientList,
+            content,
+            block.timestamp
+        );
         senderMessageListMap[msg.sender].push(messageLength);
-        for(uint256 i=0;i<recipientList.length;i++){
+        for (uint256 i = 0; i < recipientList.length; i++) {
             recipientMessageListMap[recipientList[i]].push(messageLength);
         }
         emit MessageCreatedToRecipientList(messageLength, msg.sender, recipientList, content, block.timestamp);
     }
 
-    function uploadPublicKey(bytes32 publicKey) external override {
+    function uploadPublicKey(string memory publicKey) external override {
         publicKeyMap[msg.sender] = publicKey;
         emit PublicKeyUploaded(msg.sender, publicKey);
     }

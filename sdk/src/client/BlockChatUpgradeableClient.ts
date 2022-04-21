@@ -7,7 +7,12 @@ import {
   Signer
 } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import { Message, MessageCreatedEvent } from '../model';
+import {
+  Message,
+  MessageCreatedEvent,
+  MessageToRecipientList,
+  MessageToRecipientListCreatedEvent
+} from '../model';
 
 export interface BlockChatUpgradeableClient {
   connect(
@@ -67,7 +72,7 @@ export interface BlockChatUpgradeableClient {
   batchMessage(
     messageIdList: Array<BigNumberish>,
     config?: CallOverrides
-  ): Promise<Array<Message>>;
+  ): Promise<[Array<Message>, Array<MessageToRecipientList>]>;
 
   /* ================ TRANSACTION FUNCTIONS ================ */
 
@@ -77,6 +82,19 @@ export interface BlockChatUpgradeableClient {
     config?: PayableOverrides,
     callback?: Function
   ): Promise<MessageCreatedEvent>;
+
+  uploadPublicKey(
+    publicKey: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<void>;
+
+  createMessageToRecipientList(
+    recipientList: Array<BytesLike>,
+    content: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<MessageToRecipientListCreatedEvent>;
 
   /* ================ LISTEN FUNCTIONS ================ */
 
