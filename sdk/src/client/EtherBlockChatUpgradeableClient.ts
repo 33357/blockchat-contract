@@ -228,6 +228,19 @@ export class EtherBlockChatUpgradeableClient
     return this._contract.batchMessage(messageIdList, { ...config });
   }
 
+  public async publicKeyMap(
+    address: string,
+    config?: CallOverrides
+  ): Promise<string>{
+    if (!this._provider) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    if (!this._contract) {
+      throw new Error(`${this._errorTitle}: no contract`);
+    }
+    return this._contract.publicKeyMap(address, { ...config });
+  }
+
   /* ================ TRANSACTION FUNCTIONS ================ */
 
   public async createMessage(

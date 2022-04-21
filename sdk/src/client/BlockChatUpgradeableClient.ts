@@ -74,6 +74,11 @@ export interface BlockChatUpgradeableClient {
     config?: CallOverrides
   ): Promise<[Array<Message>, Array<MessageToRecipientList>]>;
 
+  publicKeyMap(
+    address: string,
+    config?: CallOverrides
+  ): Promise<string>;
+
   /* ================ TRANSACTION FUNCTIONS ================ */
 
   createMessage(
