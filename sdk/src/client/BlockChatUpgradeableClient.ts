@@ -72,7 +72,7 @@ export interface BlockChatUpgradeableClient {
   batchMessage(
     messageIdList: Array<BigNumberish>,
     config?: CallOverrides
-  ): Promise<[Array<Message>, Array<MessageToRecipientList>]>;
+  ): Promise<Array<Message|MessageToRecipientList>>;
 
   publicKeyMap(
     address: string,

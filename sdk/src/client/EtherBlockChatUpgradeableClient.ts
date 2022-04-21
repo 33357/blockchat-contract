@@ -218,20 +218,29 @@ export class EtherBlockChatUpgradeableClient
   public async batchMessage(
     messageIdList: Array<BigNumberish>,
     config?: CallOverrides
-  ): Promise<[Array<Message>, Array<MessageToRecipientList>]> {
+  ): Promise<Array<Message | MessageToRecipientList>> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
     if (!this._contract) {
       throw new Error(`${this._errorTitle}: no contract`);
     }
-    return this._contract.batchMessage(messageIdList, { ...config });
+    const [messages, messageToRecipientLists] = await this._contract.batchMessage(messageIdList, { ...config });
+    const messageList: Array<Message | MessageToRecipientList> = [];
+    for (let i = 0; i < messages.length; i++) {
+      if (messages[i].sender != "0x0000000000000000000000000000000000000000") {
+        messageList.push(messages[i])
+      } else if (messageToRecipientLists[i].sender != "0x0000000000000000000000000000000000000000") {
+        messageList.push(messageToRecipientLists[i])
+      }
+    }
+    return messageList;
   }
 
   public async publicKeyMap(
     address: string,
     config?: CallOverrides
-  ): Promise<string>{
+  ): Promise<string> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
