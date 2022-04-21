@@ -10,6 +10,9 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     mapping(address => uint256[]) public senderMessageListMap;
     mapping(bytes32 => uint256[]) public recipientMessageListMap;
     mapping(uint256 => Message) public messageMap;
+    mapping(uint256 => MessageToRecipientList) public messageToRecipientListMap;
+
+    mapping(address => bytes32) public publicKeyMap;
 
     uint256 public messageLength;
 
@@ -73,12 +76,17 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         return messageIdList;
     }
 
-    function batchMessage(uint256[] memory messageIdList) external view override returns (Message[] memory) {
+    function batchMessage(uint256[] memory messageIdList) external view override returns (Message[] memory, MessageToRecipientList[] memory) {
         Message[] memory messageList = new Message[](messageIdList.length);
+        MessageToRecipientList[] memory messageToRecipientList = new MessageToRecipientList[](messageIdList.length);
         for (uint256 i = 0; i < messageIdList.length; i++) {
-            messageList[i] = messageMap[messageIdList[i]];
+            if(messageMap[messageIdList[i]].sender != address(0)) {
+                messageList[i] = messageMap[messageIdList[i]];
+            } else if(messageToRecipientListMap[messageIdList[i]].sender != address(0)){
+                messageToRecipientList[i] = messageToRecipientListMap[messageIdList[i]];
+            }
         }
-        return messageList;
+        return (messageList, messageToRecipientList);
     }
 
     /* ================ TRANSACTION FUNCTIONS ================ */
@@ -89,5 +97,20 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         senderMessageListMap[msg.sender].push(messageLength);
         recipientMessageListMap[recipient].push(messageLength);
         emit MessageCreated(messageLength, msg.sender, recipient, content, block.timestamp);
+    }
+
+    function createMessageToRecipientList(bytes32[] memory recipientList, string memory content) external override {
+        messageLength++;
+        messageToRecipientListMap[messageLength] = MessageToRecipientList(msg.sender, recipientList, content, block.timestamp);
+        senderMessageListMap[msg.sender].push(messageLength);
+        for(uint256 i=0;i<recipientList.length;i++){
+            recipientMessageListMap[recipientList[i]].push(messageLength);
+        }
+        emit MessageCreatedToRecipientList(messageLength, msg.sender, recipientList, content, block.timestamp);
+    }
+
+    function uploadPublicKey(bytes32 publicKey) external override {
+        publicKeyMap[msg.sender] = publicKey;
+        emit PublicKeyUploaded(msg.sender, publicKey);
     }
 }

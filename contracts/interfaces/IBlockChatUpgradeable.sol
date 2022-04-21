@@ -12,11 +12,28 @@ interface IBlockChatUpgradeable {
         uint256 createDate
     );
 
+    event MessageCreatedToRecipientList(
+        uint256 indexed messageId,
+        address indexed sender,
+        bytes32[] indexed recipientList,
+        string content,
+        uint256 createDate
+    );
+
+    event PublicKeyUploaded(address indexed sender, bytes32 publicKey);
+
     /* ================ STRUCTS ================ */
 
     struct Message {
         address sender;
         bytes32 recipient;
+        string content;
+        uint256 createDate;
+    }
+
+    struct MessageToRecipientList {
+        address sender;
+        bytes32 [] recipientList;
         string content;
         uint256 createDate;
     }
@@ -43,9 +60,13 @@ interface IBlockChatUpgradeable {
         uint256 length
     ) external view returns (uint256[] memory);
 
-    function batchMessage(uint256[] memory messageIdList) external view returns (Message[] memory);
+    function batchMessage(uint256[] memory messageIdList) external view returns (Message[] memory, MessageToRecipientList[] memory);
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes32 recipient, string memory content) external;
+
+    function createMessageToRecipientList(bytes32[] memory recipientList, string memory content) external;
+
+    function uploadPublicKey(bytes32 publicKey) external;
 }
