@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract BlockChatUpgradeable2 is IBlockChatUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-    mapping(address => uint256[]) public senderMessageListMap;
     mapping(bytes32 => uint256[]) public recipientMessageListMap;
     mapping(uint256 => Message) public messageMap;
     uint256 public messageLength;
@@ -42,24 +41,8 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable, AccessControlUpgradeabl
         return keccak256(abi.encodePacked(name));
     }
 
-    function getSenderMessageListLength(address sender) public view override returns (uint256) {
-        return senderMessageListMap[sender].length;
-    }
-
     function getRecipientMessageListLength(bytes32 recipientHash) public view override returns (uint256) {
         return recipientMessageListMap[recipientHash].length;
-    }
-
-    function batchSenderMessageId(
-        address sender,
-        uint256 start,
-        uint256 length
-    ) external view override returns (uint256[] memory) {
-        uint256[] memory messageIdList = new uint256[](length);
-        for (uint256 i = 0; i < length; i++) {
-            messageIdList[i] = senderMessageListMap[sender][start + i];
-        }
-        return messageIdList;
     }
 
     function batchRecipientMessageId(
@@ -74,12 +57,7 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable, AccessControlUpgradeabl
         return messageIdList;
     }
 
-    function batchMessage(uint256[] memory messageIdList)
-        external
-        view
-        override
-        returns (Message[] memory)
-    {
+    function batchMessage(uint256[] memory messageIdList) external view override returns (Message[] memory) {
         Message[] memory messageList = new Message[](messageIdList.length);
         for (uint256 i = 0; i < messageIdList.length; i++) {
             messageList[i] = messageMap[messageIdList[i]];
@@ -92,12 +70,9 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable, AccessControlUpgradeabl
     function createMessage(bytes32[] memory recipientHashList, string memory content) external override {
         messageLength++;
         messageMap[messageLength] = Message(
-            msg.sender,
-            recipientHashList,
-            keccak256(abi.encodePacked(content)),
+            keccak256(abi.encodePacked(msg.sender, recipientHashList, content, block.timestamp)),
             block.number
         );
-        senderMessageListMap[msg.sender].push(messageLength);
         for (uint256 i = 0; i < recipientHashList.length; i++) {
             recipientMessageListMap[recipientHashList[i]].push(messageLength);
         }

@@ -17,9 +17,7 @@ interface IBlockChatUpgradeable {
     /* ================ STRUCTS ================ */
 
     struct Message{
-        address sender;
-        bytes32[] recipientHashList;
-        bytes32 contentHash;
+        bytes32 messageHash;
         uint256 createBlock;
     }
 
@@ -29,15 +27,7 @@ interface IBlockChatUpgradeable {
 
     function getRecipientHash(string memory name) external pure returns (bytes32);
 
-    function getSenderMessageListLength(address sender) external view returns (uint256);
-
     function getRecipientMessageListLength(bytes32 recipient) external view returns (uint256);
-
-    function batchSenderMessageId(
-        address sender,
-        uint256 start,
-        uint256 length
-    ) external view returns (uint256[] memory);
 
     function batchRecipientMessageId(
         bytes32 recipientHash,
