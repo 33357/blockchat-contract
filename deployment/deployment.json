@@ -17,6 +17,14 @@
       "contract": "BlockChatUpgradeable",
       "operator": "0x7609C6831a540fC56281F579d2cEE7e60EBEa489",
       "fromBlock": 18635884
+    },
+    "BlockChatUpgradeable2": {
+      "proxyAddress": "0x492896811c9F0dBB47e88D852D137655Eb090789",
+      "implAddress": "0x0F82556C81b54DB4c29DbF184325dD2Cd8660add",
+      "version": "2.0.0",
+      "contract": "BlockChatUpgradeable2",
+      "operator": "0x7609C6831a540fC56281F579d2cEE7e60EBEa489",
+      "fromBlock": 18701726
     }
   }
 }
