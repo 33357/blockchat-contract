@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract BlockChatUpgradeable2 is IBlockChatUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeable, UUPSUpgradeable {
     mapping(bytes32 => uint256[]) public recipientMessageListMap;
     mapping(uint256 => Message) public messageMap;
     uint256 public messageLength;
