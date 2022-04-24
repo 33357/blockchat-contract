@@ -41,6 +41,15 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable, AccessControlUpgradeabl
         return keccak256(abi.encodePacked(name));
     }
 
+    function getMessageHash(
+        address sender,
+        bytes32[] memory recipientHashList,
+        string memory content,
+        uint256 createDate
+    ) public pure override returns (bytes32) {
+        return keccak256(abi.encodePacked(sender, recipientHashList, content, createDate));
+    }
+
     function getRecipientMessageListLength(bytes32 recipientHash) public view override returns (uint256) {
         return recipientMessageListMap[recipientHash].length;
     }
@@ -70,7 +79,7 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable, AccessControlUpgradeabl
     function createMessage(bytes32[] memory recipientHashList, string memory content) external override {
         messageLength++;
         messageMap[messageLength] = Message(
-            keccak256(abi.encodePacked(msg.sender, recipientHashList, content, block.timestamp)),
+            getMessageHash(msg.sender, recipientHashList, content, block.timestamp),
             block.number
         );
         for (uint256 i = 0; i < recipientHashList.length; i++) {
