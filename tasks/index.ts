@@ -4,3 +4,4 @@ export * from './admin/updateBlockChatUpgradeable';
 
 export * from './deploy/deployBlockChatUpgradeable2';
 export * from './verify/verifyBlockChatUpgradeable2';
+export * from './admin/updateBlockChatUpgradeable2';

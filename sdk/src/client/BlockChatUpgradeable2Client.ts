@@ -7,9 +7,9 @@ import {
   Signer
 } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import { BlockChatUpgradeModel } from '../model';
+import { BlockChatUpgrade2Model } from '../model';
 
-export interface BlockChatUpgradeableClient {
+export interface BlockChatUpgradeable2Client {
   connect(
     provider: Provider | Signer,
     address?: string,
@@ -24,10 +24,13 @@ export interface BlockChatUpgradeableClient {
 
   getRecipientHash(name: string, config?: CallOverrides): Promise<BytesLike>;
 
-  getSenderMessageListLength(
+  getMessageHash(
     sender: string,
+    recipientList: Array<BytesLike>,
+    content: string,
+    createDate: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<BytesLike>;
 
   getRecipientMessageListLength(
     recipient: BytesLike,
@@ -35,12 +38,6 @@ export interface BlockChatUpgradeableClient {
   ): Promise<BigNumber>;
 
   messageLength(config?: CallOverrides): Promise<BigNumber>;
-
-  senderMessageListMap(
-    sender: string,
-    index: BigNumberish,
-    config?: CallOverrides
-  ): Promise<BigNumber>;
 
   recipientMessageListMap(
     recipient: BytesLike,
@@ -51,14 +48,7 @@ export interface BlockChatUpgradeableClient {
   messageMap(
     messageId: BigNumberish,
     config?: CallOverrides
-  ): Promise<BlockChatUpgradeModel.Message>;
-
-  batchSenderMessageId(
-    sender: string,
-    start: BigNumberish,
-    length: BigNumberish,
-    config?: CallOverrides
-  ): Promise<Array<BigNumber>>;
+  ): Promise<BlockChatUpgrade2Model.Message>;
 
   batchRecipientMessageId(
     recipient: BytesLike,
@@ -70,23 +60,11 @@ export interface BlockChatUpgradeableClient {
   batchMessage(
     messageIdList: Array<BigNumberish>,
     config?: CallOverrides
-  ): Promise<
-    Array<
-      | BlockChatUpgradeModel.Message
-      | BlockChatUpgradeModel.MessageToRecipientList
-    >
-  >;
+  ): Promise<Array<BlockChatUpgrade2Model.Message>>;
 
   publicKeyMap(address: string, config?: CallOverrides): Promise<string>;
 
   /* ================ TRANSACTION FUNCTIONS ================ */
-
-  createMessage(
-    recipient: BytesLike,
-    content: string,
-    config?: PayableOverrides,
-    callback?: Function
-  ): Promise<BlockChatUpgradeModel.MessageCreatedEvent>;
 
   uploadPublicKey(
     publicKey: string,
@@ -94,12 +72,12 @@ export interface BlockChatUpgradeableClient {
     callback?: Function
   ): Promise<void>;
 
-  createMessageToRecipientList(
+  createMessage(
     recipientList: Array<BytesLike>,
     content: string,
     config?: PayableOverrides,
     callback?: Function
-  ): Promise<BlockChatUpgradeModel.MessageToRecipientListCreatedEvent>;
+  ): Promise<BlockChatUpgrade2Model.MessageCreatedEvent>;
 
   /* ================ LISTEN FUNCTIONS ================ */
 
@@ -108,4 +86,11 @@ export interface BlockChatUpgradeableClient {
   /* ================ UTILS FUNCTIONS ================ */
 
   recipientHash(name: string): BytesLike;
+
+  messageHash(
+    sender: string,
+    recipientList: Array<BytesLike>,
+    content: string,
+    createDate: BigNumberish
+  ): BytesLike;
 }
