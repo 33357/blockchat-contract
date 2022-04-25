@@ -7,6 +7,14 @@
       "contract": "BlockChatUpgradeable",
       "operator": "0x1C42aaf8bE2A6F032ec2aBb44281C8541e7C8c6C",
       "fromBlock": 16963480
+    },
+    "BlockChatUpgradeable2": {
+      "proxyAddress": "0x6589aaBE8bd497CcF812EAF26DBA126B0Add47D0",
+      "implAddress": "0x92Dc622d6Cc5c4359303a0fB729C9E36b1c22886",
+      "version": "1.1.0",
+      "contract": "BlockChatUpgradeable",
+      "operator": "0x1C42aaf8bE2A6F032ec2aBb44281C8541e7C8c6C",
+      "fromBlock": 16963480
     }
   },
   "97": {
@@ -19,12 +27,12 @@
       "fromBlock": 18635884
     },
     "BlockChatUpgradeable2": {
-      "proxyAddress": "0x104e69a40FA047b432df2d829DDcEC7a16674C7f",
-      "implAddress": "0x39108CC738362c829E614020A9A910fCc16Bf21a",
-      "version": "2.0.0",
+      "proxyAddress": "0x73D1C08BEAb299032b423BA89B7473f804BF1461",
+      "implAddress": "0xBe5DDC824cE7156cB686771a3d5C089413e356Da",
+      "version": "2.0.1",
       "contract": "BlockChatUpgradeable2",
       "operator": "0x7609C6831a540fC56281F579d2cEE7e60EBEa489",
-      "fromBlock": 18717910
+      "fromBlock": 18749972
     }
   }
 }
