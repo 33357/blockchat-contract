@@ -34,7 +34,7 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeab
     /* ================ VIEW FUNCTIONS ================ */
 
     function implementationVersion() public pure override returns (string memory) {
-        return "2.3.0";
+        return "0.2.4";
     }
 
     function getRecipientHash(string memory name) public pure override returns (bytes20) {
