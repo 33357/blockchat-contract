@@ -5,11 +5,11 @@ interface IBlockChatUpgradeable2 {
     /* ================ EVENTS ================ */
 
     event MessageCreated(
-        uint256 indexed messageId,
+        uint48 indexed messageId,
+        uint48 createDate,
         address indexed sender,
         bytes32[] recipientHashList,
-        string content,
-        uint256 createDate
+        string content
     );
 
     event PublicKeyUploaded(address indexed sender, string publicKey);
@@ -17,8 +17,8 @@ interface IBlockChatUpgradeable2 {
     /* ================ STRUCTS ================ */
 
     struct Message {
-        bytes32 messageHash;
-        uint256 createBlock;
+        bytes26 messageHash;
+        uint48 createBlock;
     }
 
     /* ================ VIEW FUNCTIONS ================ */
@@ -29,10 +29,11 @@ interface IBlockChatUpgradeable2 {
 
     function getMessageHash(
         address sender,
+        uint48 createDate,
+        uint48 createBlock,
         bytes32[] memory recipientHashList,
-        string memory content,
-        uint256 createDate
-    ) external pure returns (bytes32);
+        string memory content
+    ) external pure returns (bytes26);
 
     function getRecipientMessageListLength(bytes32 recipient) external view returns (uint256);
 

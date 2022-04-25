@@ -84,11 +84,12 @@ export class EtherBlockChatUpgradeable2Client
 
   public async getMessageHash(
     sender: string,
+    createDate: BigNumberish,
+    createBlock: BigNumberish,
     recipientList: Array<BytesLike>,
     content: string,
-    createDate: BigNumberish,
     config?: CallOverrides
-  ): Promise<BytesLike> {
+  ): Promise<string> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -97,9 +98,10 @@ export class EtherBlockChatUpgradeable2Client
     }
     return this._contract.getMessageHash(
       sender,
+      createDate,
+      createBlock,
       recipientList,
       content,
-      createDate,
       { ...config }
     );
   }
@@ -132,7 +134,7 @@ export class EtherBlockChatUpgradeable2Client
     });
   }
 
-  public async messageLength(config?: CallOverrides): Promise<BigNumber> {
+  public async messageLength(config?: CallOverrides): Promise<number> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -146,7 +148,7 @@ export class EtherBlockChatUpgradeable2Client
     recipient: BytesLike,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumber> {
+  ): Promise<number> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -305,10 +307,10 @@ export class EtherBlockChatUpgradeable2Client
       .on(this._contract.filters.MessageCreated(), (...args) => {
         const event: BlockChatUpgrade2Model.MessageCreatedEvent = {
           messageId: args[0],
-          sender: args[1],
-          recipientList: args[2],
-          content: args[3],
-          createDate: args[4]
+          createDate: args[1],
+          sender: args[2],
+          recipientList: args[3],
+          content: args[4]
         };
         callback(event);
       });
@@ -329,10 +331,10 @@ export class EtherBlockChatUpgradeable2Client
     res.forEach(event => {
       events.push({
         messageId: event.args[0],
-        sender: event.args[1],
-        recipientList: event.args[2],
-        content: event.args[3],
-        createDate: event.args[4]
+        createDate: event.args[1],
+        sender: event.args[2],
+        recipientList: event.args[3],
+        content: event.args[4]
       });
     });
     return events;

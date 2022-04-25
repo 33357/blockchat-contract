@@ -26,24 +26,25 @@ export interface BlockChatUpgradeable2Client {
 
   getMessageHash(
     sender: string,
+    createDate: BigNumberish,
+    createBlock: BigNumberish,
     recipientList: Array<BytesLike>,
     content: string,
-    createDate: BigNumberish,
     config?: CallOverrides
-  ): Promise<BytesLike>;
+  ): Promise<string>;
 
   getRecipientMessageListLength(
     recipient: BytesLike,
     config?: CallOverrides
   ): Promise<BigNumber>;
 
-  messageLength(config?: CallOverrides): Promise<BigNumber>;
+  messageLength(config?: CallOverrides): Promise<number>;
 
   recipientMessageListMap(
     recipient: BytesLike,
     index: BigNumberish,
     config?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<number>;
 
   messageMap(
     messageId: BigNumberish,

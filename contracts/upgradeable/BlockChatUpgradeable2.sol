@@ -7,9 +7,9 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeable, UUPSUpgradeable {
-    mapping(bytes32 => uint256[]) public recipientMessageListMap;
+    mapping(bytes32 => uint48[]) public recipientMessageListMap;
     mapping(uint256 => Message) public messageMap;
-    uint256 public messageLength;
+    uint48 public messageLength;
 
     mapping(address => string) public publicKeyMap;
 
@@ -34,7 +34,7 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeab
     /* ================ VIEW FUNCTIONS ================ */
 
     function implementationVersion() public pure override returns (string memory) {
-        return "2.0.1";
+        return "2.2.0";
     }
 
     function getRecipientHash(string memory name) public pure override returns (bytes32) {
@@ -43,11 +43,12 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeab
 
     function getMessageHash(
         address sender,
+        uint48 createDate,
+        uint48 createBlock,
         bytes32[] memory recipientHashList,
-        string memory content,
-        uint256 createDate
-    ) public pure override returns (bytes32) {
-        return keccak256(abi.encodePacked(sender, recipientHashList, content, createDate));
+        string memory content
+    ) public pure override returns (bytes26) {
+        return bytes26(keccak256(abi.encodePacked(sender, createDate, createBlock, recipientHashList, content)));
     }
 
     function getRecipientMessageListLength(bytes32 recipientHash) public view override returns (uint256) {
@@ -79,13 +80,13 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeab
     function createMessage(bytes32[] memory recipientHashList, string memory content) external override {
         messageLength++;
         messageMap[messageLength] = Message(
-            getMessageHash(msg.sender, recipientHashList, content, block.timestamp),
-            block.number
+            getMessageHash(msg.sender, uint48(block.timestamp), uint48(block.number), recipientHashList, content),
+            uint48(block.number)
         );
         for (uint256 i = 0; i < recipientHashList.length; i++) {
             recipientMessageListMap[recipientHashList[i]].push(messageLength);
         }
-        emit MessageCreated(messageLength, msg.sender, recipientHashList, content, block.timestamp);
+        emit MessageCreated(messageLength, uint48(block.timestamp), msg.sender, recipientHashList, content);
     }
 
     function uploadPublicKey(string memory publicKey) external override {
