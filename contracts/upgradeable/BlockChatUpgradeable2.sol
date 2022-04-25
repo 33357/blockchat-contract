@@ -38,7 +38,7 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeab
     }
 
     function getRecipientHash(string memory name) public pure override returns (bytes20) {
-        return bytes20(keccak256(abi.encodePacked(name)));
+        return bytes20(uint160(uint256(keccak256(abi.encodePacked(name)))));
     }
 
     function getMessageHash(
@@ -48,7 +48,7 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeab
         bytes20[] memory recipientHashList,
         string memory content
     ) public pure override returns (bytes26) {
-        return bytes26(keccak256(abi.encodePacked(sender, createDate, createBlock, recipientHashList, content)));
+        return bytes26(uint208(uint256(keccak256(abi.encodePacked(sender, createDate, createBlock, recipientHashList, content)))));
     }
 
     function getRecipientMessageListLength(bytes20 recipientHash) public view override returns (uint48) {
