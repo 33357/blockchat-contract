@@ -343,18 +343,21 @@ export class EtherBlockChatUpgradeable2Client
   /* ================ UTILS FUNCTIONS ================ */
 
   public recipientHash(name: string): BytesLike {
-    return ethers.utils.solidityKeccak256(['string'], [name]);
+    return ethers.utils.solidityKeccak256(['string'], [name]).substring(0, 42);
   }
 
   public messageHash(
     sender: string,
+    createDate: BigNumberish,
+    createBlock: BigNumberish,
     recipientList: Array<BytesLike>,
-    content: string,
-    createDate: BigNumberish
+    content: string
   ): BytesLike {
-    return ethers.utils.solidityKeccak256(
-      ['address', 'bytes32[]', 'string', 'uint256'],
-      [sender, recipientList, content, createDate]
-    );
+    return ethers.utils
+      .solidityKeccak256(
+        ['address', 'uint48', 'uint48', 'bytes20[]', 'string'],
+        [sender, createDate, createBlock, recipientList, content, createDate]
+      )
+      .substring(0, 54);
   }
 }

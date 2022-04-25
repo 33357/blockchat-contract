@@ -90,8 +90,9 @@ export interface BlockChatUpgradeable2Client {
 
   messageHash(
     sender: string,
+    createDate: BigNumberish,
+    createBlock: BigNumberish,
     recipientList: Array<BytesLike>,
-    content: string,
-    createDate: BigNumberish
+    content: string
   ): BytesLike;
 }
