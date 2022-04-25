@@ -8,7 +8,7 @@ interface IBlockChatUpgradeable2 {
         uint48 indexed messageId,
         uint48 createDate,
         address indexed sender,
-        bytes32[] recipientHashList,
+        bytes20[] recipientHashList,
         string content
     );
 
@@ -25,29 +25,29 @@ interface IBlockChatUpgradeable2 {
 
     function implementationVersion() external pure returns (string memory);
 
-    function getRecipientHash(string memory name) external pure returns (bytes32);
+    function getRecipientHash(string memory name) external pure returns (bytes20);
 
     function getMessageHash(
         address sender,
         uint48 createDate,
         uint48 createBlock,
-        bytes32[] memory recipientHashList,
+        bytes20[] memory recipientHashList,
         string memory content
     ) external pure returns (bytes26);
 
-    function getRecipientMessageListLength(bytes32 recipient) external view returns (uint256);
+    function getRecipientMessageListLength(bytes20 recipient) external view returns (uint48);
 
     function batchRecipientMessageId(
-        bytes32 recipientHash,
-        uint256 start,
-        uint256 length
-    ) external view returns (uint256[] memory);
+        bytes20 recipientHash,
+        uint48 start,
+        uint48 length
+    ) external view returns (uint48[] memory);
 
-    function batchMessage(uint256[] memory messageIdList) external view returns (Message[] memory);
+    function batchMessage(uint48[] memory messageIdList) external view returns (Message[] memory);
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes32[] memory recipientHashList, string memory content) external;
+    function createMessage(bytes20[] memory recipientHashList, string memory content) external;
 
     function uploadPublicKey(string memory publicKey) external;
 }

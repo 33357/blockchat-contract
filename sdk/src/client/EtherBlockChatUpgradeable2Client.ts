@@ -122,7 +122,7 @@ export class EtherBlockChatUpgradeable2Client
   public async getRecipientMessageListLength(
     recipient: BytesLike,
     config?: CallOverrides
-  ): Promise<BigNumber> {
+  ): Promise<number> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }
@@ -178,7 +178,7 @@ export class EtherBlockChatUpgradeable2Client
     start: BigNumberish,
     length: BigNumberish,
     config?: CallOverrides
-  ): Promise<Array<BigNumber>> {
+  ): Promise<Array<number>> {
     if (!this._provider) {
       throw new Error(`${this._errorTitle}: no provider`);
     }

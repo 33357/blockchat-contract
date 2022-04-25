@@ -36,7 +36,7 @@ export interface BlockChatUpgradeable2Client {
   getRecipientMessageListLength(
     recipient: BytesLike,
     config?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<number>;
 
   messageLength(config?: CallOverrides): Promise<number>;
 
@@ -56,7 +56,7 @@ export interface BlockChatUpgradeable2Client {
     start: BigNumberish,
     length: BigNumberish,
     config?: CallOverrides
-  ): Promise<Array<BigNumber>>;
+  ): Promise<Array<number>>;
 
   batchMessage(
     messageIdList: Array<BigNumberish>,
