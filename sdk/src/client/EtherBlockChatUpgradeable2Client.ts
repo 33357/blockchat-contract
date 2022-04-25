@@ -325,7 +325,6 @@ export class EtherBlockChatUpgradeable2Client
     const res = await this._contract
       .connect(this._provider)
       .queryFilter(this._contract.filters.MessageCreated(messageId), from, to);
-    console.log(res)
     const events: Array<BlockChatUpgrade2Model.MessageCreatedEvent> = [];
     res.forEach(event => {
       events.push({
