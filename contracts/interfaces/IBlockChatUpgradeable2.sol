@@ -12,7 +12,7 @@ interface IBlockChatUpgradeable2 {
         string content
     );
 
-    event DataUploaded(address indexed sender, uint48 indexed messageId);
+    event DataUploaded(address indexed sender, bytes32 indexed dataHash, uint48 indexed messageId);
 
     /* ================ STRUCTS ================ */
 

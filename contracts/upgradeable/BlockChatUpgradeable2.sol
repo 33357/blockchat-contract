@@ -129,7 +129,7 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeab
     function uploadData(bytes32 dataHash, string calldata content) external override returns (uint48) {
         uint48 messageId = createMessage(bytes20(msg.sender), content);
         dataMap[msg.sender][dataHash] = messageId;
-        emit DataUploaded(msg.sender, messageId);
+        emit DataUploaded(msg.sender, dataHash, messageId);
         return messageId;
     }
 }
