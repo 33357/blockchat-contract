@@ -123,16 +123,7 @@ contract BlockChatUpgradeable2 is IBlockChatUpgradeable2, AccessControlUpgradeab
     ) external override returns (uint48) {
         (bool success, ) = address(recipientHash).call(data);
         require(success, "BlockChatUpgradeable2: call error");
-        bytes20[] memory recipientHashList = new bytes20[](1);
-        recipientHashList[0] = recipientHash;
-        messageLength++;
-        messageMap[messageLength] = Message(
-            getMessageHash(msg.sender, uint48(block.timestamp), uint48(block.number), recipientHashList, content),
-            uint48(block.number)
-        );
-        recipientMessageListMap[recipientHash].push(messageLength);
-        emit MessageCreated(messageLength, uint48(block.timestamp), msg.sender, recipientHashList, content);
-        return messageLength;
+        return createMessage(recipientHash, content);
     }
 
     function uploadData(bytes32 dataHash, string calldata content) external override returns (uint48) {
