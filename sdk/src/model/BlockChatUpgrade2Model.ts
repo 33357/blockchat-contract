@@ -1,4 +1,4 @@
-import { BigNumber, BytesLike } from 'ethers';
+import { BytesLike } from 'ethers';
 
 export interface Message {
   messageHash: BytesLike;
@@ -11,6 +11,11 @@ export interface MessageCreatedEvent {
   sender: string;
   recipientList: Array<BytesLike>;
   content: string;
+}
+
+export interface DataUploadedEvent {
+  sender: string;
+  messageId: number;
 }
 
 export { ContractTransaction, ContractReceipt } from '@ethersproject/contracts';

@@ -8,11 +8,11 @@ interface IBlockChatUpgradeable2 {
         uint48 indexed messageId,
         uint48 createDate,
         address indexed sender,
-        bytes20[] recipientHashList,
+        bytes20[] indexed recipientHashList,
         string content
     );
 
-    event PublicKeyUploaded(address indexed sender, string publicKey);
+    event DataUploaded(address indexed sender, uint48 indexed messageId);
 
     /* ================ STRUCTS ================ */
 
@@ -32,8 +32,10 @@ interface IBlockChatUpgradeable2 {
         uint48 createDate,
         uint48 createBlock,
         bytes20[] memory recipientHashList,
-        string memory content
+        string calldata content
     ) external pure returns (bytes26);
+
+    function getDataHash(string calldata name) external pure returns (bytes32);
 
     function getRecipientMessageListLength(bytes20 recipient) external view returns (uint48);
 
@@ -43,11 +45,21 @@ interface IBlockChatUpgradeable2 {
         uint48 length
     ) external view returns (uint48[] memory);
 
-    function batchMessage(uint48[] memory messageIdList) external view returns (Message[] memory);
+    function batchMessage(uint48[] calldata messageIdList) external view returns (Message[] memory);
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes20[] memory recipientHashList, string memory content) external;
+    function createMessage(bytes20 recipientHash, string calldata content) external returns (uint48);
 
-    function uploadPublicKey(string memory publicKey) external;
+    function createMessageToList(bytes20[] calldata recipientHashList, string calldata content)
+        external
+        returns (uint48);
+
+    function createMessageWithData(
+        bytes20 recipientHash,
+        string calldata content,
+        bytes calldata data
+    ) external returns (uint48);
+
+    function uploadData(bytes32 dataHash, string calldata content) external returns (uint48);
 }

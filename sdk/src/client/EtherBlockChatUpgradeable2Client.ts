@@ -106,6 +106,33 @@ export class EtherBlockChatUpgradeable2Client
     );
   }
 
+  public async dataMap(
+    address: string,
+    dataHash: BytesLike,
+    config?: CallOverrides
+  ): Promise<number> {
+    if (!this._provider) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    if (!this._contract) {
+      throw new Error(`${this._errorTitle}: no contract`);
+    }
+    return this._contract.dataMap(address, dataHash, { ...config });
+  }
+
+  public async getDataHash(
+    name: string,
+    config?: CallOverrides
+  ): Promise<string> {
+    if (!this._provider) {
+      throw new Error(`${this._errorTitle}: no provider`);
+    }
+    if (!this._contract) {
+      throw new Error(`${this._errorTitle}: no contract`);
+    }
+    return this._contract.getDataHash(name, { ...config });
+  }
+
   public async getRecipientHash(
     name: string,
     config?: CallOverrides
@@ -203,55 +230,10 @@ export class EtherBlockChatUpgradeable2Client
     return await this._contract.batchMessage(messageIdList, { ...config });
   }
 
-  public async publicKeyMap(
-    address: string,
-    config?: CallOverrides
-  ): Promise<string> {
-    if (!this._provider) {
-      throw new Error(`${this._errorTitle}: no provider`);
-    }
-    if (!this._contract) {
-      throw new Error(`${this._errorTitle}: no contract`);
-    }
-    return this._contract.publicKeyMap(address, { ...config });
-  }
-
   /* ================ TRANSACTION FUNCTIONS ================ */
 
-  public async uploadPublicKey(
-    publicKey: string,
-    config?: PayableOverrides,
-    callback?: Function
-  ): Promise<void> {
-    if (
-      !this._provider ||
-      !this._contract ||
-      this._provider instanceof Provider
-    ) {
-      throw new Error(`${this._errorTitle}: no singer`);
-    }
-    const gas = await this._contract
-      .connect(this._provider)
-      .estimateGas.uploadPublicKey(publicKey, {
-        ...config
-      });
-    const transaction = await this._contract
-      .connect(this._provider)
-      .uploadPublicKey(publicKey, {
-        gasLimit: gas.mul(13).div(10),
-        ...config
-      });
-    if (callback) {
-      callback(transaction);
-    }
-    const receipt = await transaction.wait(this._waitConfirmations);
-    if (callback) {
-      callback(receipt);
-    }
-  }
-
   public async createMessage(
-    recipientList: Array<BytesLike>,
+    recipientHash: BytesLike,
     content: string,
     config?: PayableOverrides,
     callback?: Function
@@ -265,12 +247,12 @@ export class EtherBlockChatUpgradeable2Client
     }
     const gas = await this._contract
       .connect(this._provider)
-      .estimateGas.createMessage(recipientList, content, {
+      .estimateGas.createMessage(recipientHash, content, {
         ...config
       });
     const transaction = await this._contract
       .connect(this._provider)
-      .createMessage(recipientList, content, {
+      .createMessage(recipientHash, content, {
         gasLimit: gas.mul(13).div(10),
         ...config
       });
@@ -281,16 +263,156 @@ export class EtherBlockChatUpgradeable2Client
     if (callback) {
       callback(receipt);
     }
-    let message;
+    let _event;
     if (receipt.events) {
       receipt.events
         .filter(event => event.event === 'MessageCreated' && event.args)
         .map(event => {
-          message = (event.args as unknown) as BlockChatUpgrade2Model.Message;
+          _event = (event.args as unknown) as BlockChatUpgrade2Model.MessageCreatedEvent;
         });
     }
-    if (message) {
-      return message;
+    if (_event) {
+      return _event;
+    } else {
+      throw new Error('no event');
+    }
+  }
+
+  public async createMessageToList(
+    recipientHashList: Array<BytesLike>,
+    content: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<BlockChatUpgrade2Model.MessageCreatedEvent> {
+    if (
+      !this._provider ||
+      !this._contract ||
+      this._provider instanceof Provider
+    ) {
+      throw new Error(`${this._errorTitle}: no singer`);
+    }
+    const gas = await this._contract
+      .connect(this._provider)
+      .estimateGas.createMessageToList(recipientHashList, content, {
+        ...config
+      });
+    const transaction = await this._contract
+      .connect(this._provider)
+      .createMessageToList(recipientHashList, content, {
+        gasLimit: gas.mul(13).div(10),
+        ...config
+      });
+    if (callback) {
+      callback(transaction);
+    }
+    const receipt = await transaction.wait(this._waitConfirmations);
+    if (callback) {
+      callback(receipt);
+    }
+    let _event;
+    if (receipt.events) {
+      receipt.events
+        .filter(event => event.event === 'MessageCreated' && event.args)
+        .map(event => {
+          _event = (event.args as unknown) as BlockChatUpgrade2Model.MessageCreatedEvent;
+        });
+    }
+    if (_event) {
+      return _event;
+    } else {
+      throw new Error('no event');
+    }
+  }
+
+  async createMessageWithData(
+    recipientHash: BytesLike,
+    content: string,
+    data: BytesLike,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<BlockChatUpgrade2Model.MessageCreatedEvent> {
+    if (
+      !this._provider ||
+      !this._contract ||
+      this._provider instanceof Provider
+    ) {
+      throw new Error(`${this._errorTitle}: no singer`);
+    }
+    const gas = await this._contract
+      .connect(this._provider)
+      .estimateGas.createMessageWithData(recipientHash, content, data, {
+        ...config
+      });
+    const transaction = await this._contract
+      .connect(this._provider)
+      .createMessageWithData(recipientHash, content, data, {
+        gasLimit: gas.mul(13).div(10),
+        ...config
+      });
+    if (callback) {
+      callback(transaction);
+    }
+    const receipt = await transaction.wait(this._waitConfirmations);
+    if (callback) {
+      callback(receipt);
+    }
+    let _event;
+    if (receipt.events) {
+      receipt.events
+        .filter(event => event.event === 'MessageCreated' && event.args)
+        .map(event => {
+          _event = (event.args as unknown) as BlockChatUpgrade2Model.MessageCreatedEvent;
+        });
+    }
+    if (_event) {
+      return _event;
+    } else {
+      throw new Error('no event');
+    }
+  }
+
+  public async uploadData(
+    dataHash: BytesLike,
+    content: string,
+
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<BlockChatUpgrade2Model.DataUploadedEvent> {
+    if (
+      !this._provider ||
+      !this._contract ||
+      this._provider instanceof Provider
+    ) {
+      throw new Error(`${this._errorTitle}: no singer`);
+    }
+    const gas = await this._contract
+      .connect(this._provider)
+      .estimateGas.uploadData(dataHash, content, {
+        ...config
+      });
+    const transaction = await this._contract
+      .connect(this._provider)
+      .uploadData(dataHash, content, {
+        gasLimit: gas.mul(13).div(10),
+        ...config
+      });
+    if (callback) {
+      callback(transaction);
+    }
+    const receipt = await transaction.wait(this._waitConfirmations);
+    if (callback) {
+      callback(receipt);
+    }
+    let _event;
+    if (receipt.events) {
+      receipt.events
+        .filter(event => event.event === 'MessageCreated' && event.args)
+        .map(event => {
+          _event = (event.args as unknown) as BlockChatUpgrade2Model.DataUploadedEvent;
+        });
+    }
+    if (_event) {
+      return _event;
     } else {
       throw new Error('no event');
     }
@@ -343,7 +465,9 @@ export class EtherBlockChatUpgradeable2Client
   /* ================ UTILS FUNCTIONS ================ */
 
   public recipientHash(name: string): BytesLike {
-    return '0x' + ethers.utils.solidityKeccak256(['string'], [name]).substring(26);
+    return (
+      '0x' + ethers.utils.solidityKeccak256(['string'], [name]).substring(26)
+    );
   }
 
   public messageHash(
@@ -353,11 +477,14 @@ export class EtherBlockChatUpgradeable2Client
     recipientList: Array<BytesLike>,
     content: string
   ): BytesLike {
-    return '0x' + ethers.utils
-      .solidityKeccak256(
-        ['address', 'uint48', 'uint48', 'bytes20[]', 'string'],
-        [sender, createDate, createBlock, recipientList, content, createDate]
-      )
-      .substring(14);
+    return (
+      '0x' +
+      ethers.utils
+        .solidityKeccak256(
+          ['address', 'uint48', 'uint48', 'bytes20[]', 'string'],
+          [sender, createDate, createBlock, recipientList, content, createDate]
+        )
+        .substring(14)
+    );
   }
 }

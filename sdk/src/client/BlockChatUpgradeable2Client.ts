@@ -24,6 +24,14 @@ export interface BlockChatUpgradeable2Client {
 
   getRecipientHash(name: string, config?: CallOverrides): Promise<BytesLike>;
 
+  dataMap(
+    address: string,
+    dataHash: BytesLike,
+    config?: CallOverrides
+  ): Promise<number>;
+
+  getDataHash(name: string, config?: CallOverrides): Promise<string>;
+
   getMessageHash(
     sender: string,
     createDate: BigNumberish,
@@ -63,22 +71,36 @@ export interface BlockChatUpgradeable2Client {
     config?: CallOverrides
   ): Promise<Array<BlockChatUpgrade2Model.Message>>;
 
-  publicKeyMap(address: string, config?: CallOverrides): Promise<string>;
-
   /* ================ TRANSACTION FUNCTIONS ================ */
 
-  uploadPublicKey(
-    publicKey: string,
-    config?: PayableOverrides,
-    callback?: Function
-  ): Promise<void>;
-
   createMessage(
-    recipientList: Array<BytesLike>,
+    recipientHash: BytesLike,
     content: string,
     config?: PayableOverrides,
     callback?: Function
   ): Promise<BlockChatUpgrade2Model.MessageCreatedEvent>;
+
+  createMessageToList(
+    recipientHashList: Array<BytesLike>,
+    content: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<BlockChatUpgrade2Model.MessageCreatedEvent>;
+
+  createMessageWithData(
+    recipientHash: BytesLike,
+    content: string,
+    data: BytesLike,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<BlockChatUpgrade2Model.MessageCreatedEvent>;
+
+  uploadData(
+    dataHash: BytesLike,
+    content: string,
+    config?: PayableOverrides,
+    callback?: Function
+  ): Promise<BlockChatUpgrade2Model.DataUploadedEvent>;
 
   /* ================ LISTEN FUNCTIONS ================ */
 
