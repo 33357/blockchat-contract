@@ -108,7 +108,9 @@ export interface BlockChatUpgradeable2Client {
 
   /* ================ UTILS FUNCTIONS ================ */
 
-  recipientHash(name: string): BytesLike;
+  recipientHash(name: string): string;
+
+  dataHash(name: string): string;
 
   messageHash(
     sender: string,
@@ -116,5 +118,5 @@ export interface BlockChatUpgradeable2Client {
     createBlock: BigNumberish,
     recipientList: Array<BytesLike>,
     content: string
-  ): BytesLike;
+  ): string;
 }

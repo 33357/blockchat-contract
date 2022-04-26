@@ -324,7 +324,7 @@ export class EtherBlockChatUpgradeable2Client
     }
   }
 
-  async createMessageWithData(
+  public async createMessageWithData(
     recipientHash: BytesLike,
     content: string,
     data: BytesLike,
@@ -464,10 +464,14 @@ export class EtherBlockChatUpgradeable2Client
 
   /* ================ UTILS FUNCTIONS ================ */
 
-  public recipientHash(name: string): BytesLike {
+  public recipientHash(name: string): string {
     return (
       '0x' + ethers.utils.solidityKeccak256(['string'], [name]).substring(26)
     );
+  }
+
+  public dataHash(name: string): string {
+    return ethers.utils.solidityKeccak256(['string'], [name]);
   }
 
   public messageHash(
@@ -476,7 +480,7 @@ export class EtherBlockChatUpgradeable2Client
     createBlock: BigNumberish,
     recipientList: Array<BytesLike>,
     content: string
-  ): BytesLike {
+  ): string {
     return (
       '0x' +
       ethers.utils
