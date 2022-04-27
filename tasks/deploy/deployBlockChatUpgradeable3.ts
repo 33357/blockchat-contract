@@ -12,7 +12,7 @@ import {
   log,
 } from '../utils';
 
-const contract = 'BlockChatUpgradeable2';
+const contract = 'BlockChatUpgradeable3';
 const taskName = `${contract}:deploy`;
 
 task(taskName, `Deploy ${contract}`)

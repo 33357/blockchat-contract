@@ -72,6 +72,8 @@ export GAS_PRICE=30
 yarn run env-cmd -f $ENV_FILE yarn run hardhat BlockChatUpgradeable:deploy --gas-price $GAS_PRICE --wait-num $WAIT_NUM --network $NETWORK_ID
 
 yarn run env-cmd -f $ENV_FILE yarn run hardhat BlockChatUpgradeable2:deploy --gas-price $GAS_PRICE --wait-num $WAIT_NUM --network $NETWORK_ID
+
+yarn run env-cmd -f $ENV_FILE yarn run hardhat BlockChatUpgradeable3:deploy --gas-price $GAS_PRICE --wait-num $WAIT_NUM --network $NETWORK_ID
 ```
 
 #### update script
@@ -86,4 +88,6 @@ yarn run env-cmd -f $ENV_FILE yarn run hardhat BlockChatUpgradeable2:update --ga
 yarn run env-cmd -f $ENV_FILE yarn run hardhat BlockChatUpgradeable:verify --network $NETWORK_ID
 
 yarn run env-cmd -f $ENV_FILE yarn run hardhat BlockChatUpgradeable2:verify --network $NETWORK_ID
+
+yarn run env-cmd -f $ENV_FILE yarn run hardhat BlockChatUpgradeable3:verify --network $NETWORK_ID
 ```
