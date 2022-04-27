@@ -19,7 +19,7 @@ contract BlockChatUpgradeable3 is IBlockChatUpgradeable3, AccessControlUpgradeab
     /* ================ UTIL FUNCTIONS ================ */
 
     modifier _onlyAdmin() {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "BlockChatUpgradeable2: require admin permission");
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "BlockChatUpgradeable3: require admin permission");
         _;
     }
 
@@ -42,7 +42,16 @@ contract BlockChatUpgradeable3 is IBlockChatUpgradeable3, AccessControlUpgradeab
     function getMessageHash(
         address sender,
         uint48 createDate,
-        bytes20[] memory recipientHashList,
+        bytes20 recipientHash,
+        string calldata content
+    ) public pure override returns (bytes32) {
+        return keccak256(abi.encodePacked(sender, createDate, recipientHash, content));
+    }
+
+    function getMessageToListHash(
+        address sender,
+        uint48 createDate,
+        bytes20[] calldata recipientHashList,
         string calldata content
     ) public pure override returns (bytes32) {
         return keccak256(abi.encodePacked(sender, createDate, recipientHashList, content));
@@ -50,35 +59,25 @@ contract BlockChatUpgradeable3 is IBlockChatUpgradeable3, AccessControlUpgradeab
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes20 recipientHash, string calldata content) public override returns (bytes32) {
-        bytes20[] memory recipientHashList = new bytes20[](1);
-        recipientHashList[0] = recipientHash;
-        return createMessageToList(recipientHashList, content);
+    function createMessage(bytes20 recipientHash, string calldata content) public override {
+        emit MessageCreated(msg.sender, uint48(block.timestamp), recipientHash, content);
     }
-        
-    function createMessageToList(bytes20[] memory recipientHashList, string calldata content)
-        public
-        override
-        returns (bytes32)
-    {
-        bytes32 messageHash = getMessageHash(msg.sender, uint48(block.timestamp), recipientHashList, content);
-        emit MessageCreated(messageHash, uint48(block.timestamp), msg.sender, recipientHashList, content);
-        return messageHash;
+
+    function createMessageToList(bytes20[] calldata recipientHashList, string calldata content) public override {
+        emit MessageCreatedToList(msg.sender, uint48(block.timestamp), recipientHashList, content);
     }
 
     function createMessageWithData(
         bytes20 recipientHash,
         string calldata content,
         bytes calldata data
-    ) external override returns (bytes32) {
+    ) external override {
         (bool success, ) = address(recipientHash).call(data);
         require(success, "BlockChatUpgradeable2: call error");
-        return createMessage(recipientHash, content);
+        createMessage(recipientHash, content);
     }
 
-    function uploadData(bytes32 dataHash, string calldata content) external override returns (bytes32) {
-        bytes32 messageHash = createMessage(bytes20(msg.sender), content);
-        emit DataUploaded(msg.sender, dataHash, messageHash);
-        return messageHash;
+    function uploadData(bytes32 dataHash, string calldata content) external override {
+        emit DataUploaded(msg.sender, dataHash, content);
     }
 }
