@@ -1,41 +1,18 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.12;
 
-import "../interfaces/IBlockChatUpgradeable4.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "./interfaces/IBlockChat.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeable, UUPSUpgradeable {
+contract BlockChat is IBlockChat, Ownable {
     mapping(bytes20 => uint48[]) public recipientMessageBlockListMap;
     mapping(bytes32 => uint256) public dataBlockMap;
 
-    uint256 public blockSkip;
+    uint256 public blockSkip = 50;
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
-
-    function initialize() public initializer {
-        __AccessControl_init();
-        __UUPSUpgradeable_init();
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        blockSkip = 50;
-    }
-
-    /* ================ UTIL FUNCTIONS ================ */
-
-    modifier _onlyAdmin() {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "BlockChatUpgradeable2: require admin permission");
-        _;
-    }
-
-    function _authorizeUpgrade(address) internal view override _onlyAdmin {}
+    constructor() {}
 
     /* ================ VIEW FUNCTIONS ================ */
-
-    function implementationVersion() external pure override returns (string memory) {
-        return "0.4.1";
-    }
 
     function getRecipientHash(string calldata name) external pure override returns (bytes20) {
         return bytes20(uint160(uint256(keccak256(abi.encodePacked(name)))));
@@ -89,7 +66,7 @@ contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeab
 
     /* ================ ADMIN FUNCTIONS ================ */
 
-    function setBlockSkip(uint256 newBlockSkip) external _onlyAdmin {
+    function setBlockSkip(uint256 newBlockSkip) external onlyOwner {
         blockSkip = newBlockSkip;
     }
 }

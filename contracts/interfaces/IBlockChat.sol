@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
-interface IBlockChatUpgradeable4 {
+interface IBlockChat {
     /* ================ EVENTS ================ */
 
     event MessageCreated(address indexed sender, bytes20 indexed recipientHash, uint48 createDate, string content);
@@ -11,8 +11,6 @@ interface IBlockChatUpgradeable4 {
     /* ================ STRUCTS ================ */
 
     /* ================ VIEW FUNCTIONS ================ */
-
-    function implementationVersion() external pure returns (string memory);
 
     function getRecipientHash(string memory name) external pure returns (bytes20);
 
