@@ -11,12 +11,12 @@
   },
   "97": {
     "BlockChatUpgradeable": {
-      "proxyAddress": "0xF408f26041e112f3FA3091D5dEb0444829dd5980",
-      "implAddress": "0xB80B7687b338cC9f472116Fda369CA81bA55EaFD",
+      "proxyAddress": "0xab51aFa10f8C6dBa3d02Ed25694A32FfA75E2D59",
+      "implAddress": "0xfEEBe00E8A3ED244627a5f7DF37DD30067012530",
       "version": "1.0.0",
       "contract": "BlockChatUpgradeable",
       "operator": "0x7609C6831a540fC56281F579d2cEE7e60EBEa489",
-      "fromBlock": 18812046
+      "fromBlock": 18812924
     }
   }
 }

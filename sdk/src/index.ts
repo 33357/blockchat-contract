@@ -3,7 +3,5 @@ export * from './config';
 export * from './model';
 export {
   BlockChatUpgradeable,
-  BlockChatUpgradeable__factory,
-  BlockChatUpgradeable2,
-  BlockChatUpgradeable2__factory
+  BlockChatUpgradeable__factory
 } from './typechain';

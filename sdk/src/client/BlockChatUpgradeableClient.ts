@@ -1,5 +1,4 @@
 import {
-  BigNumber,
   BigNumberish,
   BytesLike,
   CallOverrides,
@@ -20,92 +19,67 @@ export interface BlockChatUpgradeableClient {
 
   /* ================ VIEW FUNCTIONS ================ */
 
+  blockSkip(config?: CallOverrides): Promise<number>;
+
+  dataBlockMap(dataHash: BytesLike, config?: CallOverrides): Promise<number>;
+
   implementationVersion(config?: CallOverrides): Promise<string>;
 
   getRecipientHash(name: string, config?: CallOverrides): Promise<BytesLike>;
 
-  getSenderMessageListLength(
-    sender: string,
+  getNameHash(name: string, config?: CallOverrides): Promise<string>;
+
+  getRecipientMessageBlockListLength(
+    recipientHash: BytesLike,
     config?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<number>;
 
-  getRecipientMessageListLength(
-    recipient: BytesLike,
-    config?: CallOverrides
-  ): Promise<BigNumber>;
-
-  messageLength(config?: CallOverrides): Promise<BigNumber>;
-
-  senderMessageListMap(
-    sender: string,
-    index: BigNumberish,
-    config?: CallOverrides
-  ): Promise<BigNumber>;
-
-  recipientMessageListMap(
-    recipient: BytesLike,
-    index: BigNumberish,
-    config?: CallOverrides
-  ): Promise<BigNumber>;
-
-  messageMap(
-    messageId: BigNumberish,
-    config?: CallOverrides
-  ): Promise<BlockChatUpgradeModel.Message>;
-
-  batchSenderMessageId(
-    sender: string,
+  batchRecipientMessageBlock(
+    recipientHash: BytesLike,
     start: BigNumberish,
     length: BigNumberish,
     config?: CallOverrides
-  ): Promise<Array<BigNumber>>;
-
-  batchRecipientMessageId(
-    recipient: BytesLike,
-    start: BigNumberish,
-    length: BigNumberish,
-    config?: CallOverrides
-  ): Promise<Array<BigNumber>>;
-
-  batchMessage(
-    messageIdList: Array<BigNumberish>,
-    config?: CallOverrides
-  ): Promise<
-    Array<
-      | BlockChatUpgradeModel.Message
-      | BlockChatUpgradeModel.MessageToRecipientList
-    >
-  >;
-
-  publicKeyMap(address: string, config?: CallOverrides): Promise<string>;
+  ): Promise<Array<number>>;
 
   /* ================ TRANSACTION FUNCTIONS ================ */
 
   createMessage(
-    recipient: BytesLike,
+    recipientHash: BytesLike,
     content: string,
     config?: PayableOverrides,
     callback?: Function
   ): Promise<BlockChatUpgradeModel.MessageCreatedEvent>;
 
-  uploadPublicKey(
-    publicKey: string,
+  createMessageWithData(
+    recipientHash: BytesLike,
+    content: string,
+    data: BytesLike,
     config?: PayableOverrides,
     callback?: Function
-  ): Promise<void>;
+  ): Promise<BlockChatUpgradeModel.MessageCreatedEvent>;
 
-  createMessageToRecipientList(
-    recipientList: Array<BytesLike>,
+  uploadData(
+    nameHash: BytesLike,
     content: string,
     config?: PayableOverrides,
     callback?: Function
-  ): Promise<BlockChatUpgradeModel.MessageToRecipientListCreatedEvent>;
+  ): Promise<BlockChatUpgradeModel.DataUploadedEvent>;
 
   /* ================ LISTEN FUNCTIONS ================ */
 
   listenMessage(callback: Function): Promise<void>;
 
+  getMessage(
+    receiptHash: BytesLike,
+    from: number,
+    to: number
+  ): Promise<Array<BlockChatUpgradeModel.MessageCreatedEvent>>;
+
   /* ================ UTILS FUNCTIONS ================ */
 
-  recipientHash(name: string): BytesLike;
+  recipientHash(name: string): string;
+
+  nameHash(name: string): string;
+
+  dataHash(address: string, nameHash: BytesLike): string;
 }

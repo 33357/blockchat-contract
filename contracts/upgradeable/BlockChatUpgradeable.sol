@@ -8,9 +8,9 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     mapping(bytes20 => uint48[]) public recipientMessageBlockListMap;
-    mapping(bytes32 => uint256) public dataBlockMap;
+    mapping(bytes32 => uint48) public dataBlockMap;
 
-    uint256 public blockSkip;
+    uint48 public blockSkip;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -45,28 +45,30 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         return bytes12(keccak256(abi.encodePacked(name)));
     }
 
-    function getRecipientMessageBlockListLength(bytes20 recipientHash) external view override returns (uint256) {
-        return recipientMessageBlockListMap[recipientHash].length;
+    function getRecipientMessageBlockListLength(bytes20 recipientHash) external view override returns (uint48) {
+        return uint48(recipientMessageBlockListMap[recipientHash].length);
     }
 
     function batchRecipientMessageBlock(
         bytes20 recipientHash,
-        uint256 start,
-        uint256 length
+        uint48 start,
+        uint48 length
     ) external view override returns (uint48[] memory) {
         uint48[] memory messageHashList = new uint48[](length);
-        for (uint256 i = 0; i < length; i++) {
+        for (uint48 i = 0; i < length; i++) {
             messageHashList[i] = recipientMessageBlockListMap[recipientHash][start + i];
         }
         return messageHashList;
     }
 
-
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes20 recipientHash, string calldata content) public override {
         uint48[] memory messageBlockList = recipientMessageBlockListMap[recipientHash];
-        if (messageBlockList.length == 0 || block.number - messageBlockList[messageBlockList.length - 1] > blockSkip) {
+        if (
+            messageBlockList.length == 0 ||
+            uint48(block.number) - messageBlockList[messageBlockList.length - 1] > blockSkip
+        ) {
             recipientMessageBlockListMap[recipientHash].push(uint48(block.number));
         }
         emit MessageCreated(msg.sender, recipientHash, uint48(block.timestamp), content);
@@ -84,13 +86,13 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     function uploadData(bytes12 nameHash, string calldata content) external override {
         bytes32 dataHash = bytes32(abi.encodePacked(msg.sender, nameHash));
-        dataBlockMap[dataHash] = block.number;
+        dataBlockMap[dataHash] = uint48(block.number);
         emit DataUploaded(dataHash, content);
     }
 
     /* ================ ADMIN FUNCTIONS ================ */
 
-    function setBlockSkip(uint256 newBlockSkip) external _onlyAdmin {
+    function setBlockSkip(uint48 newBlockSkip) external _onlyAdmin {
         blockSkip = newBlockSkip;
     }
 }
