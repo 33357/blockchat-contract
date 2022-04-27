@@ -7,13 +7,10 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-    mapping(address => uint256[]) public senderMessageListMap;
-    mapping(bytes32 => uint256[]) public recipientMessageListMap;
-    mapping(uint256 => Message) public messageMap;
-    uint256 public messageLength;
+    mapping(bytes20 => uint48[]) public recipientMessageBlockListMap;
+    mapping(bytes32 => uint256) public dataBlockMap;
 
-    mapping(uint256 => MessageToRecipientList) public messageToRecipientListMap;
-    mapping(address => string) public publicKeyMap;
+    uint256 public blockSkip;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -22,12 +19,13 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         __AccessControl_init();
         __UUPSUpgradeable_init();
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        blockSkip = 50;
     }
 
     /* ================ UTIL FUNCTIONS ================ */
 
     modifier _onlyAdmin() {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "BlockChatUpgradeable: require admin permission");
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "BlockChatUpgradeable2: require admin permission");
         _;
     }
 
@@ -35,93 +33,64 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     /* ================ VIEW FUNCTIONS ================ */
 
-    function implementationVersion() public pure override returns (string memory) {
-        return "1.2.0";
+    function implementationVersion() external pure override returns (string memory) {
+        return "1.0.0";
     }
 
-    function getRecipientHash(string memory name) public pure override returns (bytes32) {
-        return keccak256(abi.encodePacked(name));
+    function getRecipientHash(string calldata name) external pure override returns (bytes20) {
+        return bytes20(uint160(uint256(keccak256(abi.encodePacked(name)))));
     }
 
-    function getSenderMessageListLength(address sender) public view override returns (uint256) {
-        return senderMessageListMap[sender].length;
+    function getNameHash(string calldata name) public pure override returns (bytes12) {
+        return bytes12(keccak256(abi.encodePacked(name)));
     }
 
-    function getRecipientMessageListLength(bytes32 recipient) public view override returns (uint256) {
-        return recipientMessageListMap[recipient].length;
+    function getRecipientMessageBlockListLength(bytes20 recipientHash) external view override returns (uint256) {
+        return recipientMessageBlockListMap[recipientHash].length;
     }
 
-    function batchSenderMessageId(
-        address sender,
+    function batchRecipientMessageBlock(
+        bytes20 recipientHash,
         uint256 start,
         uint256 length
-    ) external view override returns (uint256[] memory) {
-        uint256[] memory messageIdList = new uint256[](length);
+    ) external view override returns (uint48[] memory) {
+        uint48[] memory messageHashList = new uint48[](length);
         for (uint256 i = 0; i < length; i++) {
-            messageIdList[i] = senderMessageListMap[sender][start + i];
+            messageHashList[i] = recipientMessageBlockListMap[recipientHash][start + i];
         }
-        return messageIdList;
+        return messageHashList;
     }
 
-    function batchRecipientMessageId(
-        bytes32 recipient,
-        uint256 start,
-        uint256 length
-    ) external view override returns (uint256[] memory) {
-        uint256[] memory messageIdList = new uint256[](length);
-        for (uint256 i = 0; i < length; i++) {
-            messageIdList[i] = recipientMessageListMap[recipient][start + i];
-        }
-        return messageIdList;
-    }
-
-    function batchMessage(uint256[] memory messageIdList)
-        external
-        view
-        override
-        returns (Message[] memory, MessageToRecipientList[] memory)
-    {
-        Message[] memory messageList = new Message[](messageIdList.length);
-        MessageToRecipientList[] memory messageToRecipientList_List = new MessageToRecipientList[](
-            messageIdList.length
-        );
-        for (uint256 i = 0; i < messageIdList.length; i++) {
-            if (messageMap[messageIdList[i]].sender != address(0)) {
-                messageList[i] = messageMap[messageIdList[i]];
-            } else if (messageToRecipientListMap[messageIdList[i]].sender != address(0)) {
-                messageToRecipientList_List[i] = messageToRecipientListMap[messageIdList[i]];
-            }
-        }
-        return (messageList, messageToRecipientList_List);
-    }
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes32 recipient, string memory content) external override {
-        messageLength++;
-        messageMap[messageLength] = Message(msg.sender, recipient, content, block.timestamp);
-        senderMessageListMap[msg.sender].push(messageLength);
-        recipientMessageListMap[recipient].push(messageLength);
-        emit MessageCreated(messageLength, msg.sender, recipient, content, block.timestamp);
-    }
-
-    function createMessageToRecipientList(bytes32[] memory recipientList, string memory content) external override {
-        messageLength++;
-        messageToRecipientListMap[messageLength] = MessageToRecipientList(
-            msg.sender,
-            recipientList,
-            content,
-            block.timestamp
-        );
-        senderMessageListMap[msg.sender].push(messageLength);
-        for (uint256 i = 0; i < recipientList.length; i++) {
-            recipientMessageListMap[recipientList[i]].push(messageLength);
+    function createMessage(bytes20 recipientHash, string calldata content) public override {
+        uint48[] memory messageBlockList = recipientMessageBlockListMap[recipientHash];
+        if (messageBlockList.length == 0 || block.number - messageBlockList[messageBlockList.length - 1] > blockSkip) {
+            recipientMessageBlockListMap[recipientHash].push(uint48(block.number));
         }
-        emit MessageCreatedToRecipientList(messageLength, msg.sender, recipientList, content, block.timestamp);
+        emit MessageCreated(msg.sender, recipientHash, uint48(block.timestamp), content);
     }
 
-    function uploadPublicKey(string memory publicKey) external override {
-        publicKeyMap[msg.sender] = publicKey;
-        emit PublicKeyUploaded(msg.sender, publicKey);
+    function createMessageWithData(
+        bytes20 recipientHash,
+        string calldata content,
+        bytes calldata data
+    ) external override {
+        (bool success, ) = address(recipientHash).call(data);
+        require(success, "BlockChatUpgradeable2: call error");
+        createMessage(recipientHash, content);
+    }
+
+    function uploadData(bytes12 nameHash, string calldata content) external override {
+        bytes32 dataHash = bytes32(abi.encodePacked(msg.sender, nameHash));
+        dataBlockMap[dataHash] = block.number;
+        emit DataUploaded(dataHash, content);
+    }
+
+    /* ================ ADMIN FUNCTIONS ================ */
+
+    function setBlockSkip(uint256 newBlockSkip) external _onlyAdmin {
+        blockSkip = newBlockSkip;
     }
 }

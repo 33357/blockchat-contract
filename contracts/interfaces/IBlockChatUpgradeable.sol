@@ -4,72 +4,37 @@ pragma solidity ^0.8.12;
 interface IBlockChatUpgradeable {
     /* ================ EVENTS ================ */
 
-    event MessageCreated(
-        uint256 indexed messageId,
-        address indexed sender,
-        bytes32 indexed recipient,
-        string content,
-        uint256 createDate
-    );
+    event MessageCreated(address indexed sender, bytes20 indexed recipientHash, uint48 createDate, string content);
 
-    event MessageCreatedToRecipientList(
-        uint256 indexed messageId,
-        address indexed sender,
-        bytes32[] indexed recipientList,
-        string content,
-        uint256 createDate
-    );
-
-    event PublicKeyUploaded(address indexed sender, string publicKey);
+    event DataUploaded(bytes32 indexed dataHash, string content);
 
     /* ================ STRUCTS ================ */
-
-    struct Message {
-        address sender;
-        bytes32 recipient;
-        string content;
-        uint256 createDate;
-    }
-
-    struct MessageToRecipientList {
-        address sender;
-        bytes32[] recipientList;
-        string content;
-        uint256 createDate;
-    }
 
     /* ================ VIEW FUNCTIONS ================ */
 
     function implementationVersion() external pure returns (string memory);
 
-    function getRecipientHash(string memory name) external pure returns (bytes32);
+    function getRecipientHash(string memory name) external pure returns (bytes20);
 
-    function getSenderMessageListLength(address sender) external view returns (uint256);
+    function getNameHash(string calldata name) external pure returns (bytes12);
 
-    function getRecipientMessageListLength(bytes32 recipient) external view returns (uint256);
+    function getRecipientMessageBlockListLength(bytes20 recipientHash) external view returns (uint256);
 
-    function batchSenderMessageId(
-        address sender,
+    function batchRecipientMessageBlock(
+        bytes20 recipientHash,
         uint256 start,
         uint256 length
-    ) external view returns (uint256[] memory);
-
-    function batchRecipientMessageId(
-        bytes32 recipient,
-        uint256 start,
-        uint256 length
-    ) external view returns (uint256[] memory);
-
-    function batchMessage(uint256[] memory messageIdList)
-        external
-        view
-        returns (Message[] memory, MessageToRecipientList[] memory);
+    ) external view returns (uint48[] memory);
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes32 recipient, string memory content) external;
+    function createMessage(bytes20 recipientHash, string calldata content) external;
 
-    function createMessageToRecipientList(bytes32[] memory recipientList, string memory content) external;
+    function createMessageWithData(
+        bytes20 recipientHash,
+        string calldata content,
+        bytes calldata data
+    ) external;
 
-    function uploadPublicKey(string memory publicKey) external;
+    function uploadData(bytes12 nameHash, string calldata content) external;
 }
