@@ -4,17 +4,17 @@ pragma solidity ^0.8.12;
 interface IBlockChatUpgradeable3 {
     /* ================ EVENTS ================ */
 
+    event MessageCreated(
+        address indexed sender,
+        uint48 createDate,
+        bytes20 indexed recipientHash,
+        string content
+    );
+
     event MessageCreatedToList(
         address indexed sender,
         uint48 createDate,
         bytes20[] recipientHashList,
-        string content
-    );
-
-    event MessageCreated(
-        address indexed sender,
-        uint48 createDate,
-        bytes20 indexed recipientHashList,
         string content
     );
 
