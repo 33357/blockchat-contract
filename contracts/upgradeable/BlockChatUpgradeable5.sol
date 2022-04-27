@@ -1,13 +1,13 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.12;
 
-import "../interfaces/IBlockChatUpgradeable4.sol";
+import "../interfaces/IBlockChatUpgradeable5.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeable, UUPSUpgradeable {
-    mapping(bytes20 => uint48[]) public recipientMessageBlockListMap;
+contract BlockChatUpgradeable5 is IBlockChatUpgradeable5, AccessControlUpgradeable, UUPSUpgradeable {
+    mapping(bytes32 => uint256) public recipientMessageBlockMap;
     mapping(bytes32 => uint256) public dataBlockMap;
 
     uint256 public blockSkip;
@@ -34,7 +34,7 @@ contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeab
     /* ================ VIEW FUNCTIONS ================ */
 
     function implementationVersion() external pure override returns (string memory) {
-        return "0.4.1";
+        return "0.5.0";
     }
 
     function getRecipientHash(string calldata name) external pure override returns (bytes20) {
@@ -45,29 +45,36 @@ contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeab
         return bytes12(keccak256(abi.encodePacked(name)));
     }
 
-    function getRecipientMessageBlockListLength(bytes20 recipientHash) external view override returns (uint256) {
-        return recipientMessageBlockListMap[recipientHash].length;
+    function getRecipientIndexHash(bytes20 recipient, uint96 index) public pure returns (bytes32) {
+        return bytes32(abi.encodePacked(recipient, index));
+    }
+
+    function getRecipientMessageBlockListLength(bytes20 recipientHash) public view override returns (uint96) {
+        return uint96(recipientMessageBlockMap[getRecipientIndexHash(recipientHash, type(uint96).max)]);
     }
 
     function batchRecipientMessageBlock(
         bytes20 recipientHash,
-        uint256 start,
-        uint256 length
-    ) external view override returns (uint48[] memory) {
-        uint48[] memory messageHashList = new uint48[](length);
-        for (uint256 i = 0; i < length; i++) {
-            messageHashList[i] = recipientMessageBlockListMap[recipientHash][start + i];
+        uint96 start,
+        uint96 length
+    ) external view override returns (uint256[] memory) {
+        uint256[] memory messageHashList = new uint256[](length);
+        for (uint96 i = 0; i < length; i++) {
+            messageHashList[i] = recipientMessageBlockMap[getRecipientIndexHash(recipientHash, start + i)];
         }
         return messageHashList;
     }
 
-
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes20 recipientHash, string calldata content) public override {
-        uint48[] memory messageBlockList = recipientMessageBlockListMap[recipientHash];
-        if (messageBlockList.length == 0 || block.number - messageBlockList[messageBlockList.length - 1] > blockSkip) {
-            recipientMessageBlockListMap[recipientHash].push(uint48(block.number));
+        uint96 length = getRecipientMessageBlockListLength(recipientHash);
+        if (
+            length == 0 ||
+            block.number - recipientMessageBlockMap[getRecipientIndexHash(recipientHash, length - 1)] > blockSkip
+        ) {
+            recipientMessageBlockMap[getRecipientIndexHash(recipientHash, length)] = block.number;
+            recipientMessageBlockMap[getRecipientIndexHash(recipientHash, type(uint96).max)]++;
         }
         emit MessageCreated(msg.sender, recipientHash, uint48(block.timestamp), content);
     }
