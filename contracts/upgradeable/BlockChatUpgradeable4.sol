@@ -41,8 +41,8 @@ contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeab
         return bytes20(uint160(uint256(keccak256(abi.encodePacked(name)))));
     }
 
-    function getNameHash(address sender, string calldata name) public pure override returns (bytes12) {
-        return bytes12(keccak256(abi.encodePacked(sender,name)));
+    function getNameHash(string calldata name) public pure override returns (bytes12) {
+        return bytes12(keccak256(abi.encodePacked(name)));
     }
 
     function getRecipientMessageBlockListLength(bytes20 recipientHash) external view override returns (uint256) {
@@ -86,7 +86,7 @@ contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeab
     }
 
     function uploadData(bytes12 nameHash, string calldata content) external override {
-        bytes32 dataHash = abi.encodePacked(msg.sender, nameHash)[1];
+        bytes32 dataHash = bytes32(abi.encodePacked(msg.sender, nameHash));
         dataBlockMap[dataHash] = block.number;
         emit DataUploaded(dataHash, content);
     }

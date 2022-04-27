@@ -21,7 +21,7 @@ interface IBlockChatUpgradeable4 {
 
     function getRecipientHash(string memory name) external pure returns (bytes20);
 
-    function getNameHash(address sender, string calldata name) external pure returns (bytes12);
+    function getNameHash(string calldata name) external pure returns (bytes12);
 
     function getRecipientMessageBlockListLength(bytes20 recipientHash) external view returns (uint256);
 
