@@ -39,24 +39,6 @@ contract BlockChatUpgradeable3 is IBlockChatUpgradeable3, AccessControlUpgradeab
         return keccak256(abi.encodePacked(name));
     }
 
-    function getMessageHash(
-        address sender,
-        uint48 createDate,
-        bytes20 recipientHash,
-        string calldata content
-    ) public pure override returns (bytes32) {
-        return keccak256(abi.encodePacked(sender, createDate, recipientHash, content));
-    }
-
-    function getMessageToListHash(
-        address sender,
-        uint48 createDate,
-        bytes20[] calldata recipientHashList,
-        string calldata content
-    ) public pure override returns (bytes32) {
-        return keccak256(abi.encodePacked(sender, createDate, recipientHashList, content));
-    }
-
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes20 recipientHash, string calldata content) public override {

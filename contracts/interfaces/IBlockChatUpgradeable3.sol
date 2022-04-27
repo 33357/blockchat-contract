@@ -28,20 +28,6 @@ interface IBlockChatUpgradeable3 {
 
     function getDataHash(string calldata name) external pure returns (bytes32);
 
-    function getMessageHash(
-        address sender,
-        uint48 createDate,
-        bytes20 recipientHash,
-        string calldata content
-    ) external pure returns (bytes32);
-
-    function getMessageToListHash(
-        address sender,
-        uint48 createDate,
-        bytes20[] calldata recipientHashList,
-        string calldata content
-    ) external pure returns (bytes32);
-
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes20 recipientHash, string calldata content) external;
