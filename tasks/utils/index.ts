@@ -75,6 +75,7 @@ export interface Deployment {
   BlockChatUpgradeable: ContractInfo;
   BlockChatUpgradeable2: ContractInfo;
   BlockChatUpgradeable3: ContractInfo;
+  BlockChatUpgradeable4: ContractInfo;
 }
 
 export interface DeploymentFull {
