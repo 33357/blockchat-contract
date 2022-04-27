@@ -11,7 +11,7 @@ interface IBlockChatUpgradeable4 {
         string content
     );
 
-    event DataUploaded(address indexed sender, bytes32 indexed dataHash, string content);
+    event DataUploaded(bytes32 indexed dataHash, string content);
 
     /* ================ STRUCTS ================ */
 
@@ -21,7 +21,7 @@ interface IBlockChatUpgradeable4 {
 
     function getRecipientHash(string memory name) external pure returns (bytes20);
 
-    function getDataHash(string calldata name) external pure returns (bytes32);
+    function getNameHash(address sender, string calldata name) external pure returns (bytes12);
 
     function getRecipientMessageBlockListLength(bytes20 recipientHash) external view returns (uint256);
 
@@ -41,5 +41,5 @@ interface IBlockChatUpgradeable4 {
         bytes calldata data
     ) external;
 
-    function uploadData(bytes32 dataHash, string calldata content) external;
+    function uploadData(bytes12 nameHash, string calldata content) external;
 }

@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeable, UUPSUpgradeable {
     mapping(bytes20 => uint48[]) public recipientMessageBlockListMap;
-    mapping(address => mapping(bytes32 => uint256)) public dataBlockMap;
+    mapping(bytes32 => uint256) public dataBlockMap;
 
     uint256 public blockSkip;
 
@@ -41,8 +41,8 @@ contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeab
         return bytes20(uint160(uint256(keccak256(abi.encodePacked(name)))));
     }
 
-    function getDataHash(string calldata name) external pure override returns (bytes32) {
-        return keccak256(abi.encodePacked(name));
+    function getNameHash(address sender, string calldata name) public pure override returns (bytes12) {
+        return bytes12(keccak256(abi.encodePacked(sender,name)));
     }
 
     function getRecipientMessageBlockListLength(bytes20 recipientHash) external view override returns (uint256) {
@@ -85,9 +85,10 @@ contract BlockChatUpgradeable4 is IBlockChatUpgradeable4, AccessControlUpgradeab
         createMessage(recipientHash, content);
     }
 
-    function uploadData(bytes32 dataHash, string calldata content) external override {
-        dataBlockMap[msg.sender][dataHash] = block.number;
-        emit DataUploaded(msg.sender, dataHash, content);
+    function uploadData(bytes12 nameHash, string calldata content) external override {
+        bytes32 dataHash = abi.encodePacked(msg.sender, nameHash)[1];
+        dataBlockMap[dataHash] = block.number;
+        emit DataUploaded(dataHash, content);
     }
 
     /* ================ ADMIN FUNCTIONS ================ */
