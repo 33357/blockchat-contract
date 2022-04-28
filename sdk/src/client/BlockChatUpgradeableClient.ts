@@ -76,11 +76,11 @@ export interface BlockChatUpgradeableClient {
     to: number
   ): Promise<Array<BlockChatUpgradeModel.MessageCreatedEvent>>;
 
-  getDataUploadedEventList(
+  getDataUploadedEvent(
     dataHash: BytesLike,
     from: number,
     to: number
-  ): Promise<Array<BlockChatUpgradeModel.DataUploadedEvent>>;
+  ): Promise<BlockChatUpgradeModel.DataUploadedEvent>;
 
   /* ================ UTILS FUNCTIONS ================ */
 

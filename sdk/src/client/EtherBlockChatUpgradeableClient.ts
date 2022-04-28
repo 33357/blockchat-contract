@@ -319,25 +319,22 @@ export class EtherBlockChatUpgradeableClient
     return events;
   }
 
-  async getDataUploadedEventList(
+  async getDataUploadedEvent(
     dataHash: BytesLike,
     from: number,
     to: number
-  ): Promise<Array<BlockChatUpgradeModel.DataUploadedEvent>> {
+  ): Promise<BlockChatUpgradeModel.DataUploadedEvent> {
     if (!this._provider || !this._contract) {
       return Promise.reject('need to connect a valid provider');
     }
     const res = await this._contract
       .connect(this._provider)
       .queryFilter(this._contract.filters.DataUploaded(dataHash), from, to);
-    const messageCreatedEventList: Array<BlockChatUpgradeModel.DataUploadedEvent> = [];
-    res.forEach(messageCreatedEvent => {
-      messageCreatedEventList.push({
-        dataHash: messageCreatedEvent.args[0],
-        content: messageCreatedEvent.args[1]
-      });
-    });
-    return messageCreatedEventList;
+    const dataUploadedEvent: BlockChatUpgradeModel.DataUploadedEvent = {
+      dataHash: res[0].args[0],
+      content: res[0].args[1]
+    };
+    return dataUploadedEvent;
   }
 
   /* ================ UTILS FUNCTIONS ================ */
