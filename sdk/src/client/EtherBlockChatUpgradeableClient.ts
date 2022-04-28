@@ -167,19 +167,18 @@ export class EtherBlockChatUpgradeableClient
     if (callback) {
       callback(receipt);
     }
-    let _event;
+    let messageCreatedEvent;
     if (receipt.events) {
       receipt.events
         .filter(event => event.event === 'MessageCreated' && event.args)
         .map(event => {
-          _event = (event.args as unknown) as BlockChatUpgradeModel.MessageCreatedEvent;
+          messageCreatedEvent = (event.args as unknown) as BlockChatUpgradeModel.MessageCreatedEvent;
         });
     }
-    if (_event) {
-      return _event;
-    } else {
+    if (!messageCreatedEvent) {
       throw new Error('no event');
     }
+    return messageCreatedEvent;
   }
 
   async createMessageWithData(
@@ -214,19 +213,18 @@ export class EtherBlockChatUpgradeableClient
     if (callback) {
       callback(receipt);
     }
-    let _event;
+    let messageCreatedEvent;
     if (receipt.events) {
       receipt.events
         .filter(event => event.event === 'MessageCreated' && event.args)
         .map(event => {
-          _event = (event.args as unknown) as BlockChatUpgradeModel.MessageCreatedEvent;
+          messageCreatedEvent = (event.args as unknown) as BlockChatUpgradeModel.MessageCreatedEvent;
         });
     }
-    if (_event) {
-      return _event;
-    } else {
+    if (!messageCreatedEvent) {
       throw new Error('no event');
     }
+    return messageCreatedEvent;
   }
 
   async uploadData(
@@ -260,19 +258,18 @@ export class EtherBlockChatUpgradeableClient
     if (callback) {
       callback(receipt);
     }
-    let _event;
+    let dataUploadedEvent;
     if (receipt.events) {
       receipt.events
         .filter(event => event.event === 'DataUploaded' && event.args)
         .map(event => {
-          _event = (event.args as unknown) as BlockChatUpgradeModel.DataUploadedEvent;
+          dataUploadedEvent = (event.args as unknown) as BlockChatUpgradeModel.DataUploadedEvent;
         });
     }
-    if (_event) {
-      return _event;
-    } else {
+    if (!dataUploadedEvent) {
       throw new Error('no event');
     }
+    return dataUploadedEvent;
   }
 
   /* ================ LISTEN FUNCTIONS ================ */
@@ -284,17 +281,17 @@ export class EtherBlockChatUpgradeableClient
     this._contract
       .connect(this._provider)
       .on(this._contract.filters.MessageCreated(), (...args) => {
-        const event: BlockChatUpgradeModel.MessageCreatedEvent = {
+        const messageCreatedEvent: BlockChatUpgradeModel.MessageCreatedEvent = {
           sender: args[0],
           recipientHash: args[1],
           createDate: args[2],
           content: args[3]
         };
-        callback(event);
+        callback(messageCreatedEvent);
       });
   }
 
-  async getMessageCreatedEvent(
+  async getMessageCreatedEventList(
     sender: string | undefined,
     receiptHash: BytesLike | undefined,
     from: number,
@@ -311,18 +308,18 @@ export class EtherBlockChatUpgradeableClient
         to
       );
     const events: Array<BlockChatUpgradeModel.MessageCreatedEvent> = [];
-    res.forEach(event => {
+    res.forEach(messageCreatedEventList => {
       events.push({
-        sender: event.args[0],
-        recipientHash: event.args[1],
-        createDate: event.args[2],
-        content: event.args[3]
+        sender: messageCreatedEventList.args[0],
+        recipientHash: messageCreatedEventList.args[1],
+        createDate: messageCreatedEventList.args[2],
+        content: messageCreatedEventList.args[3]
       });
     });
     return events;
   }
 
-  async getDataUploadedEvent(
+  async getDataUploadedEventList(
     dataHash: BytesLike,
     from: number,
     to: number
@@ -333,14 +330,14 @@ export class EtherBlockChatUpgradeableClient
     const res = await this._contract
       .connect(this._provider)
       .queryFilter(this._contract.filters.DataUploaded(dataHash), from, to);
-    const events: Array<BlockChatUpgradeModel.DataUploadedEvent> = [];
-    res.forEach(event => {
-      events.push({
-        dataHash: event.args[0],
-        content: event.args[1]
+    const messageCreatedEventList: Array<BlockChatUpgradeModel.DataUploadedEvent> = [];
+    res.forEach(messageCreatedEvent => {
+      messageCreatedEventList.push({
+        dataHash: messageCreatedEvent.args[0],
+        content: messageCreatedEvent.args[1]
       });
     });
-    return events;
+    return messageCreatedEventList;
   }
 
   /* ================ UTILS FUNCTIONS ================ */

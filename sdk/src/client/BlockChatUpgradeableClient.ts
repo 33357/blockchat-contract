@@ -69,14 +69,14 @@ export interface BlockChatUpgradeableClient {
 
   listenMessageCreatedEvent(callback: Function): Promise<void>;
 
-  getMessageCreatedEvent(
+  getMessageCreatedEventList(
     sender: string | undefined,
     receiptHash: BytesLike | undefined,
     from: number,
     to: number
   ): Promise<Array<BlockChatUpgradeModel.MessageCreatedEvent>>;
 
-  getDataUploadedEvent(
+  getDataUploadedEventList(
     dataHash: BytesLike,
     from: number,
     to: number
