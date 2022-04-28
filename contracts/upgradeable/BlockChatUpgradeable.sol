@@ -19,7 +19,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         __AccessControl_init();
         __UUPSUpgradeable_init();
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        blockSkip = 50;
+        blockSkip = 5000;
     }
 
     /* ================ UTIL FUNCTIONS ================ */
