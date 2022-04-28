@@ -277,7 +277,7 @@ export class EtherBlockChatUpgradeableClient
 
   /* ================ LISTEN FUNCTIONS ================ */
 
-  async listenMessage(callback: Function): Promise<void> {
+  async listenMessageCreatedEvent(callback: Function): Promise<void> {
     if (!this._provider || !this._contract) {
       return Promise.reject('need to connect a valid provider');
     }
@@ -294,7 +294,7 @@ export class EtherBlockChatUpgradeableClient
       });
   }
 
-  async getMessage(
+  async getMessageCreatedEvent(
     sender:string,
     receiptHash: BytesLike,
     from: number,
@@ -317,6 +317,31 @@ export class EtherBlockChatUpgradeableClient
         recipientHash: event.args[1],
         createDate: event.args[2],
         content: event.args[3]
+      });
+    });
+    return events;
+  }
+
+  async getDataUploadedEvent(
+    dataHash: BytesLike,
+    from: number,
+    to: number
+  ): Promise<Array<BlockChatUpgradeModel.DataUploadedEvent>> {
+    if (!this._provider || !this._contract) {
+      return Promise.reject('need to connect a valid provider');
+    }
+    const res = await this._contract
+      .connect(this._provider)
+      .queryFilter(
+        this._contract.filters.DataUploaded(dataHash),
+        from,
+        to
+      );
+    const events: Array<BlockChatUpgradeModel.DataUploadedEvent> = [];
+    res.forEach(event => {
+      events.push({
+        dataHash: event.args[0],
+        content: event.args[1],
       });
     });
     return events;
