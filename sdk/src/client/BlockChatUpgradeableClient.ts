@@ -88,5 +88,5 @@ export interface BlockChatUpgradeableClient {
 
   nameHash(name: string): string;
 
-  dataHash(address: string, nameHash: BytesLike): string;
+  dataHash(address: string, name: string): string;
 }

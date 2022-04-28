@@ -346,10 +346,10 @@ export class EtherBlockChatUpgradeableClient
   }
 
   nameHash(name: string): string {
-    return ethers.utils.solidityKeccak256(['string'], [name]).substring(26);
+    return ethers.utils.solidityKeccak256(['string'], [name]).substring(0, 26);
   }
 
-  dataHash(address: string, nameHash: BytesLike): string {
-    return address + nameHash.toString().replace('0x', '');
+  dataHash(address: string, name: string): string {
+    return address + this.nameHash(name).replace('0x', '');
   }
 }
