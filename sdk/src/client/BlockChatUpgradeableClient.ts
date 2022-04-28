@@ -70,6 +70,7 @@ export interface BlockChatUpgradeableClient {
   listenMessage(callback: Function): Promise<void>;
 
   getMessage(
+    sender:string,
     receiptHash: BytesLike,
     from: number,
     to: number

@@ -295,6 +295,7 @@ export class EtherBlockChatUpgradeableClient
   }
 
   async getMessage(
+    sender:string,
     receiptHash: BytesLike,
     from: number,
     to: number
@@ -305,7 +306,7 @@ export class EtherBlockChatUpgradeableClient
     const res = await this._contract
       .connect(this._provider)
       .queryFilter(
-        this._contract.filters.MessageCreated(undefined, receiptHash),
+        this._contract.filters.MessageCreated(sender, receiptHash),
         from,
         to
       );
