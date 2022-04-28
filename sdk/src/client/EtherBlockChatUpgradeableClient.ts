@@ -295,8 +295,8 @@ export class EtherBlockChatUpgradeableClient
   }
 
   async getMessageCreatedEvent(
-    sender:string,
-    receiptHash: BytesLike,
+    sender: string | undefined,
+    receiptHash: BytesLike | undefined,
     from: number,
     to: number
   ): Promise<Array<BlockChatUpgradeModel.MessageCreatedEvent>> {
@@ -332,16 +332,12 @@ export class EtherBlockChatUpgradeableClient
     }
     const res = await this._contract
       .connect(this._provider)
-      .queryFilter(
-        this._contract.filters.DataUploaded(dataHash),
-        from,
-        to
-      );
+      .queryFilter(this._contract.filters.DataUploaded(dataHash), from, to);
     const events: Array<BlockChatUpgradeModel.DataUploadedEvent> = [];
     res.forEach(event => {
       events.push({
         dataHash: event.args[0],
-        content: event.args[1],
+        content: event.args[1]
       });
     });
     return events;
