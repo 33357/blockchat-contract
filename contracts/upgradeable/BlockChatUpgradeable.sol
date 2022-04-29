@@ -9,8 +9,9 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     mapping(bytes20 => uint48[]) public recipientMessageBlockListMap;
     mapping(bytes32 => uint48) public dataBlockMap;
-
     uint48 public blockSkip;
+
+    mapping(bytes32 => bool) public messageHashMap;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -34,7 +35,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     /* ================ VIEW FUNCTIONS ================ */
 
     function implementationVersion() external pure override returns (string memory) {
-        return "1.0.0";
+        return "1.0.1";
     }
 
     function getRecipientHash(string calldata name) external pure override returns (bytes20) {
@@ -43,6 +44,15 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     function getNameHash(string calldata name) public pure override returns (bytes12) {
         return bytes12(keccak256(abi.encodePacked(name)));
+    }
+
+    function getMessageHash(
+        address sender,
+        bytes20 recipientHash,
+        uint48 createDate,
+        string calldata content
+    ) public pure override returns (bytes32) {
+        return keccak256(abi.encodePacked(sender, recipientHash, createDate, content));
     }
 
     function getRecipientMessageBlockListLength(bytes20 recipientHash) external view override returns (uint48) {
@@ -81,6 +91,12 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     ) external override {
         (bool success, ) = address(recipientHash).call(data);
         require(success, "BlockChatUpgradeable2: call error");
+        createMessage(recipientHash, content);
+    }
+
+    function createMessageWithHash(bytes20 recipientHash, string calldata content) external override {
+        bytes32 messageHash = getMessageHash(msg.sender, recipientHash, uint48(block.timestamp), content);
+        messageHashMap[messageHash] = true;
         createMessage(recipientHash, content);
     }
 

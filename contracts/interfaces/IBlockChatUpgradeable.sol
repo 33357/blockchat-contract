@@ -18,6 +18,13 @@ interface IBlockChatUpgradeable {
 
     function getNameHash(string calldata name) external pure returns (bytes12);
 
+    function getMessageHash(
+        address sender,
+        bytes20 recipientHash,
+        uint48 createDate,
+        string calldata content
+    ) external pure returns (bytes32);
+
     function getRecipientMessageBlockListLength(bytes20 recipientHash) external view returns (uint48);
 
     function batchRecipientMessageBlock(
@@ -35,6 +42,8 @@ interface IBlockChatUpgradeable {
         string calldata content,
         bytes calldata data
     ) external;
+
+    function createMessageWithHash(bytes20 recipientHash, string calldata content) external;
 
     function uploadData(bytes12 nameHash, string calldata content) external;
 }
