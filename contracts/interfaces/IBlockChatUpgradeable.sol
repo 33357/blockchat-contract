@@ -12,6 +12,8 @@ interface IBlockChatUpgradeable {
 
     /* ================ VIEW FUNCTIONS ================ */
 
+    function messageHashMap(bytes32 messageHash) external view returns (bool);
+
     function implementationVersion() external pure returns (string memory);
 
     function getRecipientHash(string memory name) external pure returns (bytes20);
@@ -37,13 +39,19 @@ interface IBlockChatUpgradeable {
 
     function createMessage(bytes20 recipientHash, string calldata content) external;
 
-    function createMessageWithData(
+    function createMessageCall(
         bytes20 recipientHash,
         string calldata content,
         bytes calldata data
     ) external;
 
-    function createMessageWithHash(bytes20 recipientHash, string calldata content) external;
+    function createMessageHash(bytes20 recipientHash, string calldata content) external;
+
+    function createMessageHashAndCall(
+        bytes20 recipientHash,
+        string calldata content,
+        bytes calldata data
+    ) external;
 
     function uploadData(bytes12 nameHash, string calldata content) external;
 }
