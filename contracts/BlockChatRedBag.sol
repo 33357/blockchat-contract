@@ -18,9 +18,10 @@ contract BlockChatRedBag is ERC20 {
 
     uint256 getAmount;
 
-    constructor(string memory newContent,bytes20 newRecipientHash) ERC20("BlockChatRedBag", "BCRB") {
+    constructor(string memory newContent, bytes20 newRecipientHash) ERC20("BlockChatRedBag", "BCRB") {
         content = newContent;
         recipientHash = newRecipientHash;
+        _mint(msg.sender, tokenTotalAmount / 5);
     }
 
     /* ================ UTIL FUNCTIONS ================ */
@@ -49,12 +50,7 @@ contract BlockChatRedBag is ERC20 {
 
     function getRedBag() public {
         require(!getMap[tx.origin], "BlockChatRedBag: You have already got the red bag");
-        bytes32 messageHash = blockChat.getMessageHash(
-            tx.origin,
-            recipientHash,
-            uint48(block.timestamp),
-            content
-        );
+        bytes32 messageHash = blockChat.getMessageHash(tx.origin, recipientHash, uint48(block.timestamp), content);
         require(blockChat.messageHashMap(messageHash), "BlockChatRedBag: Message not exists");
         _mint(tx.origin, airdropAmount());
         getMap[tx.origin] = true;
@@ -73,9 +69,6 @@ contract BlockChatRedBag is ERC20 {
         }
         if (getAmount < 100000) {
             return tokenTotalAmount / 5 / 100000;
-        }
-        if (getAmount < 1000000) {
-            return tokenTotalAmount / 5 / 1000000;
         }
         return 0;
     }
