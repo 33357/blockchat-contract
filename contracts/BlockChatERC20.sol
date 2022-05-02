@@ -21,7 +21,7 @@ contract BlockChatERC20 is ERC20 {
     ) internal override {
         blockChat.createMessage(
             bytes20(address(this)),
-            string(abi.encodePacked("transfer ", symbol(), " from ", Strings.toHexString(uint160(from), 20), " to ", Strings.toHexString(uint160(to), 20), " amount ", Strings.toString(amount)))
+            string(abi.encodePacked("tr::", Strings.toHexString(uint160(from), 20), "::", Strings.toHexString(uint160(to), 20), "::", Strings.toString(amount)))
         );
     }
 }
