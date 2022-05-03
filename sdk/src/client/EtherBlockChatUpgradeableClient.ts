@@ -181,10 +181,9 @@ export class EtherBlockChatUpgradeableClient
     return messageCreatedEvent;
   }
 
-  async createMessageWithData(
+  async createMessageHash(
     recipientHash: BytesLike,
     content: string,
-    data: BytesLike,
     config?: PayableOverrides,
     callback?: Function
   ): Promise<BlockChatUpgradeModel.MessageCreatedEvent> {
@@ -197,12 +196,12 @@ export class EtherBlockChatUpgradeableClient
     }
     const gas = await this._contract
       .connect(this._provider)
-      .estimateGas.createMessageWithData(recipientHash, content, data, {
+      .estimateGas.createMessageHash(recipientHash, content, {
         ...config
       });
     const transaction = await this._contract
       .connect(this._provider)
-      .createMessageWithData(recipientHash, content, data, {
+      .createMessageHash(recipientHash, content, {
         gasLimit: gas.mul(13).div(10),
         ...config
       });

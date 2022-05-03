@@ -50,10 +50,9 @@ export interface BlockChatUpgradeableClient {
     callback?: Function
   ): Promise<BlockChatUpgradeModel.MessageCreatedEvent>;
 
-  createMessageWithData(
+  createMessageHash(
     recipientHash: BytesLike,
     content: string,
-    data: BytesLike,
     config?: PayableOverrides,
     callback?: Function
   ): Promise<BlockChatUpgradeModel.MessageCreatedEvent>;
