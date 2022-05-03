@@ -42,16 +42,18 @@ interface IBlockChatUpgradeable {
     function createMessageCall(
         bytes20 recipientHash,
         string calldata content,
+        uint256 value,
         bytes calldata data
-    ) external;
+    ) external payable;
 
     function createMessageHash(bytes20 recipientHash, string calldata content) external;
 
     function createMessageHashAndCall(
         bytes20 recipientHash,
         string calldata content,
+        uint256 value,
         bytes calldata data
-    ) external;
+    ) external payable;
 
     function uploadData(bytes12 nameHash, string calldata content) external;
 }

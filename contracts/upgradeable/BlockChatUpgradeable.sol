@@ -87,9 +87,10 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     function createMessageCall(
         bytes20 recipientHash,
         string calldata content,
+        uint256 value,
         bytes calldata data
-    ) external override {
-        (bool success, ) = address(recipientHash).call(data);
+    ) external override payable{
+        (bool success, ) = address(recipientHash).call{value:value}(data);
         require(success, "BlockChatUpgradeable2: call error");
         createMessage(recipientHash, content);
     }
@@ -100,9 +101,9 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         createMessage(recipientHash, content);
     }
 
-    function createMessageHashAndCall(bytes20 recipientHash, string calldata content,bytes calldata data) external override {
+    function createMessageHashAndCall(bytes20 recipientHash, string calldata content, uint256 value,bytes calldata data) payable external override {
         createMessageHash(recipientHash, content);
-        (bool success, ) = address(recipientHash).call(data);
+        (bool success, ) = address(recipientHash).call{value:value}(data);
         require(success, "BlockChatUpgradeable2: call error");
     }
 
