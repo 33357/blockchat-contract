@@ -47,7 +47,12 @@ contract BlockChatRedBag is ERC20 {
 
     function getRedBag() public {
         require(!getMap[tx.origin], "BlockChatRedBag: You have already got the red bag");
-        bytes32 messageHash = blockChat.getMessageHash(tx.origin, bytes20(address(this)), uint48(block.timestamp), content);
+        bytes32 messageHash = blockChat.getMessageHash(
+            tx.origin,
+            bytes20(address(this)),
+            uint48(block.timestamp),
+            content
+        );
         require(blockChat.messageHashMap(messageHash), "BlockChatRedBag: Message not exists");
         _mint(tx.origin, airdropAmount());
         getMap[tx.origin] = true;

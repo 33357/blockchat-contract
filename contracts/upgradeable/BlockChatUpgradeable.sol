@@ -90,9 +90,9 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         bytes calldata data
     ) external payable override {
         bool success;
-        if(msg.value>0){
+        if (msg.value > 0) {
             (success, ) = address(recipientHash).call{value: msg.value}(data);
-        }else{
+        } else {
             (success, ) = address(recipientHash).call(data);
         }
         require(success, "BlockChatUpgradeable2: call error");
@@ -112,9 +112,9 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     ) external payable override {
         createMessageHash(recipientHash, content);
         bool success;
-        if(msg.value>0){
+        if (msg.value > 0) {
             (success, ) = address(recipientHash).call{value: msg.value}(data);
-        }else{
+        } else {
             (success, ) = address(recipientHash).call(data);
         }
         require(success, "BlockChatUpgradeable2: call error");
