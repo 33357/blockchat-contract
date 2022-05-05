@@ -34,6 +34,16 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     function _authorizeUpgrade(address) internal view override _onlyAdmin {}
 
+    function _toSender(address sender, uint48 blockNumber) internal {
+        uint48[] memory senderMessageBlockList = senderMessageBlockListMap[sender];
+        if (
+            senderMessageBlockList.length == 0 ||
+            blockNumber - senderMessageBlockList[senderMessageBlockList.length - 1] > blockSkip
+        ) {
+            senderMessageBlockListMap[sender].push(blockNumber);
+        }
+    }
+
     /* ================ VIEW FUNCTIONS ================ */
 
     function implementationVersion() external pure override returns (string memory) {
@@ -87,7 +97,11 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes20 recipientHash, string calldata content) public override {
+    function createMessage(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender
+    ) public override {
         uint48[] memory recipientMessageBlockList = recipientMessageBlockListMap[recipientHash];
         uint48 blockNumber = uint48(block.number);
         address sender = msg.sender;
@@ -97,34 +111,42 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         ) {
             recipientMessageBlockListMap[recipientHash].push(blockNumber);
         }
-        uint48[] memory senderMessageBlockList = senderMessageBlockListMap[sender];
-        if (
-            senderMessageBlockList.length == 0 ||
-            blockNumber - senderMessageBlockList[senderMessageBlockList.length - 1] > blockSkip
-        ) {
-            senderMessageBlockListMap[sender].push(blockNumber);
+        if (isToSender) {
+            _toSender(sender, blockNumber);
         }
         emit MessageCreated(sender, recipientHash, uint48(block.timestamp), content);
     }
 
-    function createMessageCall(bytes20 recipientHash, string calldata content) external payable override {
+    function createMessageCall(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender
+    ) external payable override {
         bytes32 messageHash = getMessageHash(msg.sender, recipientHash, uint48(block.timestamp), content);
         if (msg.value > 0) {
             IBlockChatCall(address(recipientHash)).blockChatCallBackHash{value: msg.value}(msg.sender, messageHash);
         } else {
             IBlockChatCall(address(recipientHash)).blockChatCallBackHash(msg.sender, messageHash);
         }
-        createMessage(recipientHash, content);
+        createMessage(recipientHash, content, isToSender);
     }
 
-    function createMessageHash(bytes20 recipientHash, string calldata content) public override {
+    function createMessageHash(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender
+    ) public override {
         bytes32 messageHash = getMessageHash(msg.sender, recipientHash, uint48(block.timestamp), content);
         messageHashMap[messageHash] = true;
-        createMessage(recipientHash, content);
+        createMessage(recipientHash, content, isToSender);
     }
 
-    function createMessageHashAndCall(bytes20 recipientHash, string calldata content) external payable override {
-        createMessageHash(recipientHash, content);
+    function createMessageHashAndCall(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender
+    ) external payable override {
+        createMessageHash(recipientHash, content, isToSender);
         if (msg.value > 0) {
             IBlockChatCall(address(recipientHash)).blockChatCallBack{value: msg.value}(msg.sender);
         } else {

@@ -39,7 +39,8 @@ contract BlockChatRedBag is ERC20 {
                     "::",
                     Strings.toString(amount)
                 )
-            )
+            ),
+            false
         );
     }
 

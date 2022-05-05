@@ -43,13 +43,29 @@ interface IBlockChatUpgradeable {
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
-    function createMessage(bytes20 recipientHash, string calldata content) external;
+    function createMessage(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender
+    ) external;
 
-    function createMessageCall(bytes20 recipientHash, string calldata content) external payable;
+    function createMessageCall(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender
+    ) external payable;
 
-    function createMessageHash(bytes20 recipientHash, string calldata content) external;
+    function createMessageHash(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender
+    ) external;
 
-    function createMessageHashAndCall(bytes20 recipientHash, string calldata content) external payable;
+    function createMessageHashAndCall(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender
+    ) external payable;
 
     function uploadData(bytes12 nameHash, string calldata content) external;
 }

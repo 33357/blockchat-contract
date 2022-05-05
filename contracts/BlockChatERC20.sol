@@ -30,7 +30,8 @@ contract BlockChatERC20 is ERC20 {
                     "::",
                     Strings.toString(amount)
                 )
-            )
+            ),
+            false
         );
     }
 }
