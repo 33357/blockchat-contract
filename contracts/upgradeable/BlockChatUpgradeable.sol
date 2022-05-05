@@ -9,11 +9,11 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     mapping(bytes20 => uint48[]) public recipientMessageBlockListMap;
-    mapping(address => uint48[]) public senderMessageBlockListMap;
     mapping(bytes32 => uint48) public dataBlockMap;
     uint48 public blockSkip;
 
     mapping(bytes32 => bool) public messageHashMap;
+    mapping(address => uint48[]) public senderMessageBlockListMap;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -107,14 +107,12 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         emit MessageCreated(sender, recipientHash, uint48(block.timestamp), content);
     }
 
-    function createMessageCall(
-        bytes20 recipientHash,
-        string calldata content
-    ) external payable override {
+    function createMessageCall(bytes20 recipientHash, string calldata content) external payable override {
+        bytes32 messageHash = getMessageHash(msg.sender, recipientHash, uint48(block.timestamp), content);
         if (msg.value > 0) {
-            IBlockChatCall(address(recipientHash)).blockChatCallBack{value: msg.value}(msg.sender);
+            IBlockChatCall(address(recipientHash)).blockChatCallBackHash{value: msg.value}(msg.sender, messageHash);
         } else {
-            IBlockChatCall(address(recipientHash)).blockChatCallBack(msg.sender);
+            IBlockChatCall(address(recipientHash)).blockChatCallBackHash(msg.sender, messageHash);
         }
         createMessage(recipientHash, content);
     }
@@ -125,10 +123,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         createMessage(recipientHash, content);
     }
 
-    function createMessageHashAndCall(
-        bytes20 recipientHash,
-        string calldata content
-    ) external payable override {
+    function createMessageHashAndCall(bytes20 recipientHash, string calldata content) external payable override {
         createMessageHash(recipientHash, content);
         if (msg.value > 0) {
             IBlockChatCall(address(recipientHash)).blockChatCallBack{value: msg.value}(msg.sender);
