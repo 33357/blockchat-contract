@@ -52,6 +52,13 @@ interface IBlockChatUpgradeable {
     function createMessageCall(
         bytes20 recipientHash,
         string calldata content,
+        bool isToSender,
+        bytes calldata data
+    ) external payable;
+
+    function createMessageCallBack(
+        bytes20 recipientHash,
+        string calldata content,
         bool isToSender
     ) external payable;
 
@@ -61,10 +68,17 @@ interface IBlockChatUpgradeable {
         bool isToSender
     ) external;
 
-    function createMessageHashAndCall(
+    function createMessageHashAndCallBack(
         bytes20 recipientHash,
         string calldata content,
         bool isToSender
+    ) external payable;
+
+    function createMessageHashAndCall(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender,
+        bytes calldata data
     ) external payable;
 
     function uploadData(bytes12 nameHash, string calldata content) external;

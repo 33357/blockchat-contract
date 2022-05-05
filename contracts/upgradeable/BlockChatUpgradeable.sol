@@ -120,6 +120,22 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
     function createMessageCall(
         bytes20 recipientHash,
         string calldata content,
+        bool isToSender,
+        bytes calldata data
+    ) external payable override {
+        bool success;
+        if (msg.value > 0) {
+            (success, ) = address(recipientHash).call{value: msg.value}(data);
+        } else {
+            (success, ) = address(recipientHash).call(data);
+        }
+        require(success, "BlockChatUpgradeable: call failed");
+        createMessage(recipientHash, content, isToSender);
+    }
+
+    function createMessageCallBack(
+        bytes20 recipientHash,
+        string calldata content,
         bool isToSender
     ) external payable override {
         bytes32 messageHash = getMessageHash(msg.sender, recipientHash, uint48(block.timestamp), content);
@@ -141,7 +157,7 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         createMessage(recipientHash, content, isToSender);
     }
 
-    function createMessageHashAndCall(
+    function createMessageHashAndCallBack(
         bytes20 recipientHash,
         string calldata content,
         bool isToSender
@@ -152,6 +168,22 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         } else {
             IBlockChatCall(address(recipientHash)).blockChatCallBack(msg.sender);
         }
+    }
+
+    function createMessageHashAndCall(
+        bytes20 recipientHash,
+        string calldata content,
+        bool isToSender,
+        bytes calldata data
+    ) external payable override {
+        bool success;
+        if (msg.value > 0) {
+            (success, ) = address(recipientHash).call{value: msg.value}(data);
+        } else {
+            (success, ) = address(recipientHash).call(data);
+        }
+        require(success, "BlockChatUpgradeable: call failed");
+        createMessageHash(recipientHash, content, isToSender);
     }
 
     function uploadData(bytes12 nameHash, string calldata content) external override {
