@@ -35,22 +35,26 @@ interface IBlockChatUpgradeable {
         uint48 length
     ) external view returns (uint48[] memory);
 
+    function batchSenderMessageBlock(
+        address sender,
+        uint48 start,
+        uint48 length
+    ) external view returns (uint48[] memory);
+
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes20 recipientHash, string calldata content) external;
 
     function createMessageCall(
         bytes20 recipientHash,
-        string calldata content,
-        bytes calldata data
+        string calldata content
     ) external payable;
 
     function createMessageHash(bytes20 recipientHash, string calldata content) external;
 
     function createMessageHashAndCall(
         bytes20 recipientHash,
-        string calldata content,
-        bytes calldata data
+        string calldata content
     ) external payable;
 
     function uploadData(bytes12 nameHash, string calldata content) external;

@@ -2,12 +2,14 @@
 pragma solidity ^0.8.12;
 
 import "../interfaces/IBlockChatUpgradeable.sol";
+import "../interfaces/IBlockChatCall.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     mapping(bytes20 => uint48[]) public recipientMessageBlockListMap;
+    mapping(address => uint48[]) public senderMessageBlockListMap;
     mapping(bytes32 => uint48) public dataBlockMap;
     uint48 public blockSkip;
 
@@ -71,31 +73,49 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
         return messageHashList;
     }
 
+    function batchSenderMessageBlock(
+        address sender,
+        uint48 start,
+        uint48 length
+    ) external view override returns (uint48[] memory) {
+        uint48[] memory messageHashList = new uint48[](length);
+        for (uint48 i = 0; i < length; i++) {
+            messageHashList[i] = senderMessageBlockListMap[sender][start + i];
+        }
+        return messageHashList;
+    }
+
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function createMessage(bytes20 recipientHash, string calldata content) public override {
-        uint48[] memory messageBlockList = recipientMessageBlockListMap[recipientHash];
+        uint48[] memory recipientMessageBlockList = recipientMessageBlockListMap[recipientHash];
+        uint48 blockNumber = uint48(block.number);
+        address sender = msg.sender;
         if (
-            messageBlockList.length == 0 ||
-            uint48(block.number) - messageBlockList[messageBlockList.length - 1] > blockSkip
+            recipientMessageBlockList.length == 0 ||
+            blockNumber - recipientMessageBlockList[recipientMessageBlockList.length - 1] > blockSkip
         ) {
-            recipientMessageBlockListMap[recipientHash].push(uint48(block.number));
+            recipientMessageBlockListMap[recipientHash].push(blockNumber);
         }
-        emit MessageCreated(msg.sender, recipientHash, uint48(block.timestamp), content);
+        uint48[] memory senderMessageBlockList = senderMessageBlockListMap[sender];
+        if (
+            senderMessageBlockList.length == 0 ||
+            blockNumber - senderMessageBlockList[senderMessageBlockList.length - 1] > blockSkip
+        ) {
+            senderMessageBlockListMap[sender].push(blockNumber);
+        }
+        emit MessageCreated(sender, recipientHash, uint48(block.timestamp), content);
     }
 
     function createMessageCall(
         bytes20 recipientHash,
-        string calldata content,
-        bytes calldata data
+        string calldata content
     ) external payable override {
-        bool success;
         if (msg.value > 0) {
-            (success, ) = address(recipientHash).call{value: msg.value}(data);
+            IBlockChatCall(address(recipientHash)).blockChatCallBack{value: msg.value}(msg.sender);
         } else {
-            (success, ) = address(recipientHash).call(data);
+            IBlockChatCall(address(recipientHash)).blockChatCallBack(msg.sender);
         }
-        require(success, "BlockChatUpgradeable2: call error");
         createMessage(recipientHash, content);
     }
 
@@ -107,17 +127,14 @@ contract BlockChatUpgradeable is IBlockChatUpgradeable, AccessControlUpgradeable
 
     function createMessageHashAndCall(
         bytes20 recipientHash,
-        string calldata content,
-        bytes calldata data
+        string calldata content
     ) external payable override {
         createMessageHash(recipientHash, content);
-        bool success;
         if (msg.value > 0) {
-            (success, ) = address(recipientHash).call{value: msg.value}(data);
+            IBlockChatCall(address(recipientHash)).blockChatCallBack{value: msg.value}(msg.sender);
         } else {
-            (success, ) = address(recipientHash).call(data);
+            IBlockChatCall(address(recipientHash)).blockChatCallBack(msg.sender);
         }
-        require(success, "BlockChatUpgradeable2: call error");
     }
 
     function uploadData(bytes12 nameHash, string calldata content) external override {
