@@ -8,16 +8,15 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract BlockChatRedBag is ERC20 {
     IBlockChatUpgradeable public blockChat = IBlockChatUpgradeable(0x21f4463D28c2921c34063D676d9Cefb159820aed);
 
-    string public content;
-
     uint256 public tokenTotalAmount = 10**18 * 10**8;
 
     mapping(address => bool) public getMap;
 
     uint256 getAmount;
 
-    constructor(string memory newContent) ERC20("BlockChatRedBag", "BCRB") {
-        content = newContent;
+    address pair;
+
+    constructor() ERC20("BlockChatRedBag", "BCRB") {
         _mint(msg.sender, tokenTotalAmount / 5);
     }
 
@@ -28,35 +27,78 @@ contract BlockChatRedBag is ERC20 {
         address to,
         uint256 amount
     ) internal override {
-        blockChat.createMessage(
-            bytes20(address(this)),
-            string(
-                abi.encodePacked(
-                    "tr::",
-                    Strings.toHexString(uint160(from), 20),
-                    "::",
-                    Strings.toHexString(uint160(to), 20),
-                    "::",
-                    Strings.toString(amount)
-                )
-            ),
-            false
-        );
+        if (from == address(0)) {
+            blockChat.createMessage(
+                bytes20(address(this)),
+                string(
+                    abi.encodePacked("mint::", Strings.toHexString(uint160(to), 20), "::", Strings.toString(amount))
+                ),
+                false
+            );
+        } else if (to == address(0)) {
+            blockChat.createMessage(
+                bytes20(address(this)),
+                string(
+                    abi.encodePacked("burn::", Strings.toHexString(uint160(from), 20), "::", Strings.toString(amount))
+                ),
+                false
+            );
+        } else if (from == pair) {
+            if (gasleft() > 200000) {
+                blockChat.createMessage(
+                    bytes20(address(this)),
+                    string(
+                        abi.encodePacked(
+                            "remove::",
+                            Strings.toHexString(uint160(to), 20),
+                            "::",
+                            Strings.toString(amount)
+                        )
+                    ),
+                    false
+                );
+            } else {
+                blockChat.createMessage(
+                    bytes20(address(this)),
+                    string(
+                        abi.encodePacked("buy::", Strings.toHexString(uint160(to), 20), "::", Strings.toString(amount))
+                    ),
+                    false
+                );
+            }
+        } else if (to == pair) {
+            if (gasleft() > 200000) {
+                blockChat.createMessage(
+                    bytes20(address(this)),
+                    string(
+                        abi.encodePacked("add::", Strings.toHexString(uint160(to), 20), "::", Strings.toString(amount))
+                    ),
+                    false
+                );
+            } else {
+                blockChat.createMessage(
+                    bytes20(address(this)),
+                    string(
+                        abi.encodePacked(
+                            "sell::",
+                            Strings.toHexString(uint160(from), 20),
+                            "::",
+                            Strings.toString(amount)
+                        )
+                    ),
+                    false
+                );
+            }
+        }
     }
 
     /* ================ TRANSACTION FUNCTIONS ================ */
 
     function getRedBag() public {
-        require(!getMap[tx.origin], "BlockChatRedBag: You have already got the red bag");
-        bytes32 messageHash = blockChat.getMessageHash(
-            tx.origin,
-            bytes20(address(this)),
-            uint48(block.timestamp),
-            content
-        );
-        require(blockChat.messageHashMap(messageHash), "BlockChatRedBag: Message not exists");
-        _mint(tx.origin, airdropAmount());
-        getMap[tx.origin] = true;
+        require(!getMap[msg.sender], "BlockChatRedBag: You have already got the red bag");
+        uint256 amount = airdropAmount();
+        _mint(msg.sender, amount);
+        getMap[msg.sender] = true;
         getAmount++;
     }
 
