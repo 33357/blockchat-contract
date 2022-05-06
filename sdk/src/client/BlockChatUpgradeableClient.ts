@@ -46,7 +46,7 @@ export interface BlockChatUpgradeableClient {
   createMessage(
     recipientHash: BytesLike,
     content: string,
-    isToSender?: boolean,
+    isToSender: boolean,
     config?: PayableOverrides,
     callback?: Function
   ): Promise<BlockChatUpgradeModel.MessageCreatedEvent>;
@@ -54,7 +54,7 @@ export interface BlockChatUpgradeableClient {
   createMessageHash(
     recipientHash: BytesLike,
     content: string,
-    isToSender?: boolean,
+    isToSender: boolean,
     config?: PayableOverrides,
     callback?: Function
   ): Promise<BlockChatUpgradeModel.MessageCreatedEvent>;

@@ -139,7 +139,7 @@ export class EtherBlockChatUpgradeableClient
   async createMessage(
     recipientHash: BytesLike,
     content: string,
-    isToSender: boolean = false,
+    isToSender: boolean,
     config?: PayableOverrides,
     callback?: Function
   ): Promise<BlockChatUpgradeModel.MessageCreatedEvent> {
@@ -185,7 +185,7 @@ export class EtherBlockChatUpgradeableClient
   async createMessageHash(
     recipientHash: BytesLike,
     content: string,
-    isToSender: boolean = false,
+    isToSender: boolean,
     config?: PayableOverrides,
     callback?: Function
   ): Promise<BlockChatUpgradeModel.MessageCreatedEvent> {
