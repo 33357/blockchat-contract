@@ -1,6 +1,7 @@
 import { BytesLike } from 'ethers';
 
 export interface MessageCreatedEvent {
+  blockHash: string;
   sender: string;
   recipientHash: BytesLike;
   createDate: number;
@@ -8,6 +9,7 @@ export interface MessageCreatedEvent {
 }
 
 export interface DataUploadedEvent {
+  blockHash: string;
   dataHash: BytesLike;
   content: string;
 }

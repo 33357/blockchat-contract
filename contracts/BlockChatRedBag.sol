@@ -81,6 +81,7 @@ contract BlockChatRedBag is ERC20 {
     }
 
     function getRedBag() public {
+        require(msg.sender == tx.origin, "BlockChatRedBag: Only user can get red bag");
         require(!getMap[msg.sender], "BlockChatRedBag: You have already got the red bag");
         _mint(msg.sender, airdropAmount());
         getMap[msg.sender] = true;
