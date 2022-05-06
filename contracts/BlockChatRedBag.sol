@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract BlockChatRedBag is ERC20 {
-    IBlockChatUpgradeable public blockChat = IBlockChatUpgradeable(0x21f4463D28c2921c34063D676d9Cefb159820aed);
+    IBlockChatUpgradeable public blockChat = IBlockChatUpgradeable(0xDb8dd091D09D65D09ccfA6ab7e3D0a1aDf3D660D);
 
     uint256 public tokenTotalAmount = 10**18 * 10**8;
 
