@@ -44,51 +44,31 @@ contract BlockChatRedBag is ERC20 {
                 false
             );
         } else if (from == pair) {
-            if (gasleft() > 200000) {
-                blockChat.createMessage(
-                    bytes20(address(this)),
-                    string(
-                        abi.encodePacked(
-                            "remove::",
-                            Strings.toHexString(uint160(to), 20),
-                            "::",
-                            Strings.toString(amount)
-                        )
-                    ),
-                    false
-                );
-            } else {
-                blockChat.createMessage(
-                    bytes20(address(this)),
-                    string(
-                        abi.encodePacked("buy::", Strings.toHexString(uint160(to), 20), "::", Strings.toString(amount))
-                    ),
-                    false
-                );
-            }
+            blockChat.createMessage(
+                bytes20(address(this)),
+                string(
+                    abi.encodePacked(
+                        "buy/remove::",
+                        Strings.toHexString(uint160(to), 20),
+                        "::",
+                        Strings.toString(amount)
+                    )
+                ),
+                false
+            );
         } else if (to == pair) {
-            if (gasleft() > 200000) {
-                blockChat.createMessage(
-                    bytes20(address(this)),
-                    string(
-                        abi.encodePacked("add::", Strings.toHexString(uint160(to), 20), "::", Strings.toString(amount))
-                    ),
-                    false
-                );
-            } else {
-                blockChat.createMessage(
-                    bytes20(address(this)),
-                    string(
-                        abi.encodePacked(
-                            "sell::",
-                            Strings.toHexString(uint160(from), 20),
-                            "::",
-                            Strings.toString(amount)
-                        )
-                    ),
-                    false
-                );
-            }
+            blockChat.createMessage(
+                bytes20(address(this)),
+                string(
+                    abi.encodePacked(
+                        "sell/add::",
+                        Strings.toHexString(uint160(from), 20),
+                        "::",
+                        Strings.toString(amount)
+                    )
+                ),
+                false
+            );
         }
     }
 
