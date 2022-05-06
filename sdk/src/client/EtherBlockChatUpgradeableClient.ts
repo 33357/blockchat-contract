@@ -283,7 +283,7 @@ export class EtherBlockChatUpgradeableClient
       .connect(this._provider)
       .on(this._contract.filters.MessageCreated(), (...args) => {
         const messageCreatedEvent: BlockChatUpgradeModel.MessageCreatedEvent = {
-          blockHash: '',
+          hash: '',
           sender: args[0],
           recipientHash: args[1],
           createDate: args[2],
@@ -312,7 +312,7 @@ export class EtherBlockChatUpgradeableClient
     const events: Array<BlockChatUpgradeModel.MessageCreatedEvent> = [];
     res.forEach(messageCreatedEventList => {
       events.push({
-        blockHash: messageCreatedEventList.blockHash,
+        hash: messageCreatedEventList.transactionHash,
         sender: messageCreatedEventList.args[0],
         recipientHash: messageCreatedEventList.args[1],
         createDate: messageCreatedEventList.args[2],
@@ -334,7 +334,7 @@ export class EtherBlockChatUpgradeableClient
       .connect(this._provider)
       .queryFilter(this._contract.filters.DataUploaded(dataHash), from, to);
     const dataUploadedEvent: BlockChatUpgradeModel.DataUploadedEvent = {
-      blockHash: res[0].blockHash,
+      hash: res[0].transactionHash,
       dataHash: res[0].args[0],
       content: res[0].args[1]
     };
